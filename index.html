@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NET's tripFLIX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root {
+    --bg: #141414;
+    --bg-2: #181818;
+    --bg-3: #232323;
+    --line: #333;
+    --text: #fff;
+    --text-2: #b3b3b3;
+    --text-3: #808080;
+    --red: #e50914;
+    --red-dark: #b20710;
+    --green: #46d369;
+    --c-spot: #e50914;
+    --c-attraction: #3b82f6;
+    --c-food: #f59e0b;
+    --c-cafe: #a16207;
+    --c-stay: #8b5cf6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); }
+  body {
+    font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body.no-scroll { overflow: hidden; }
+  button { font-family: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
+  input, select { font-family: inherit; }
+  a { color: inherit; text-decoration: none; }
+
+  /* ---------- Header ---------- */
+  .header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; align-items: center; gap: 36px;
+    padding: 0 4%; height: 68px;
+    background: linear-gradient(to bottom, rgba(0,0,0,.8), transparent);
+    transition: background .3s;
+  }
+  .header.solid { background: var(--bg); }
+  .logo {
+    font-family: "Bebas Neue", "Noto Sans KR", sans-serif;
+    color: var(--red); font-size: 38px; letter-spacing: 1px; line-height: 1;
+    display: flex; align-items: baseline;
+    cursor: pointer; white-space: nowrap; user-select: none;
+  }
+  .logo small {
+    font-family: "Noto Sans KR", sans-serif; font-weight: 700; font-size: .42em; letter-spacing: 0;
+    color: #fff; margin: 0 .18em 0 .06em;
+  }
+  .nav { display: flex; gap: 20px; font-size: 14px; }
+  .nav a { color: #e5e5e5; transition: color .2s; cursor: pointer; }
+  .nav a:hover { color: var(--text-2); }
+  .nav a.active { color: #fff; font-weight: 700; }
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 18px; }
+  .search-box {
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid transparent; padding: 6px 8px; transition: all .3s;
+  }
+  .search-box.open { border-color: #fff; background: rgba(0,0,0,.75); }
+  .search-box input {
+    width: 0; background: transparent; border: 0; outline: none; color: #fff; font-size: 14px;
+    transition: width .3s;
+  }
+  .search-box.open input { width: 220px; }
+  .icon-btn svg { width: 22px; height: 22px; display: block; }
+  .avatar { width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #e50914, #ff8a00); display: grid; place-items: center; font-weight: 900; font-size: 14px; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; height: 82vh; min-height: 520px;
+    display: flex; align-items: center;
+    padding: 0 4%;
+    background-size: cover; background-position: center;
+  }
+  .hero::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+      linear-gradient(to right, rgba(0,0,0,.85) 0%, rgba(0,0,0,.4) 45%, transparent 75%),
+      linear-gradient(to top, var(--bg) 0%, transparent 30%);
+  }
+  .hero-content { position: relative; z-index: 2; max-width: 560px; margin-top: 40px; }
+  .hero-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; letter-spacing: 3px; color: #ddd; margin-bottom: 14px; font-weight: 700; }
+  .hero-tag b { color: var(--red); font-family: "Bebas Neue"; font-size: 22px; letter-spacing: 1px; }
+  .hero-title { font-size: clamp(44px, 6vw, 84px); font-weight: 900; line-height: 1.05; letter-spacing: -2px; text-shadow: 2px 2px 12px rgba(0,0,0,.6); }
+  .hero-meta { display: flex; gap: 10px; align-items: center; margin: 16px 0 12px; font-size: 15px; color: #ddd; flex-wrap: wrap; }
+  .hero-desc { font-size: 17px; line-height: 1.6; color: #eee; text-shadow: 1px 1px 6px rgba(0,0,0,.7); }
+  .hero-btns { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 10px 26px; border-radius: 4px; font-size: 17px; font-weight: 700;
+    transition: opacity .2s, background .2s;
+  }
+  .btn svg { width: 24px; height: 24px; }
+  .btn-white { background: #fff; color: #000; }
+  .btn-white:hover { background: rgba(255,255,255,.75); }
+  .btn-gray { background: rgba(109,109,110,.7); color: #fff; }
+  .btn-gray:hover { background: rgba(109,109,110,.45); }
+  .match { color: var(--green); font-weight: 700; }
+  .age { border: 1px solid rgba(255,255,255,.5); padding: 0 6px; font-size: 13px; line-height: 20px; }
+  .hd { border: 1px solid rgba(255,255,255,.5); border-radius: 3px; padding: 0 5px; font-size: 11px; line-height: 16px; }
+
+  /* ---------- Rows ---------- */
+  .rows { position: relative; z-index: 3; margin-top: -110px; padding-bottom: 60px; }
+  .row { margin-bottom: 26px; }
+  .row-title { font-size: 20px; font-weight: 700; padding: 0 4%; margin-bottom: 4px; display: flex; align-items: baseline; gap: 10px; }
+  .row-title span { font-size: 13px; color: #54b9c5; font-weight: 500; opacity: 0; transition: opacity .3s; }
+  .row:hover .row-title span { opacity: 1; }
+  .row-wrap { position: relative; }
+  .track {
+    display: flex; gap: 8px; overflow-x: auto; scroll-behavior: smooth;
+    padding: 22px 4% 130px; margin-bottom: -102px; scrollbar-width: none;
+    pointer-events: none; /* 아래로 늘린 여백이 다음 줄 클릭을 막지 않도록 */
+  }
+  .track > * { pointer-events: auto; }
+  .track::-webkit-scrollbar { display: none; }
+  .arrow {
+    position: absolute; top: 22px; bottom: 28px; width: 4%; min-width: 36px; z-index: 6;
+    background: rgba(20,20,20,.6); display: grid; place-items: center;
+    opacity: 0; transition: opacity .2s, background .2s;
+  }
+  .row-wrap:hover .arrow { opacity: 1; }
+  .arrow:hover { background: rgba(20,20,20,.85); }
+  .arrow svg { width: 30px; height: 30px; transition: transform .2s; }
+  .arrow:hover svg { transform: scale(1.25); }
+  .arrow.left { left: 0; border-radius: 0 4px 4px 0; }
+  .arrow.right { right: 0; border-radius: 4px 0 0 4px; }
+
+  .card {
+    position: relative; flex: 0 0 auto; width: clamp(200px, 18vw, 290px);
+    border-radius: 4px; cursor: pointer;
+    transition: transform .3s ease, box-shadow .3s ease; z-index: 1;
+  }
+  .card:hover { transform: scale(1.12); z-index: 5; box-shadow: 0 10px 24px rgba(0,0,0,.7); }
+  .thumb {
+    aspect-ratio: 16 / 9; border-radius: 4px; overflow: hidden; position: relative;
+    background-size: cover; background-position: center;
+  }
+  .card:hover .thumb { border-radius: 4px 4px 0 0; }
+  .thumb-title {
+    position: absolute; left: 10px; right: 10px; bottom: 8px;
+    font-weight: 900; font-size: 20px; line-height: 1.15; letter-spacing: -.5px;
+    text-shadow: 0 2px 8px rgba(0,0,0,.9);
+  }
+  .n-badge {
+    position: absolute; top: 6px; left: 8px; font-family: "Bebas Neue"; color: var(--red);
+    font-size: 26px; line-height: 1; text-shadow: 0 1px 4px rgba(0,0,0,.6);
+  }
+  .new-badge {
+    position: absolute; top: 0; right: 0; background: var(--red); color: #fff;
+    font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 0 4px 0 4px;
+  }
+  .card-info {
+    position: absolute; left: 0; right: 0; top: 100%;
+    background: var(--bg-2); padding: 12px; border-radius: 0 0 4px 4px;
+    box-shadow: 0 10px 24px rgba(0,0,0,.7);
+    opacity: 0; visibility: hidden; transition: opacity .25s;
+  }
+  .card:hover .card-info { opacity: 1; visibility: visible; }
+  .ci-btns { display: flex; gap: 6px; margin-bottom: 10px; }
+  .circle {
+    width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255,255,255,.5);
+    display: grid; place-items: center; background: rgba(42,42,42,.6); transition: border-color .2s;
+  }
+  .circle:hover { border-color: #fff; }
+  .circle svg { width: 16px; height: 16px; }
+  .circle.white { background: #fff; color: #000; border-color: #fff; }
+  .circle.more { margin-left: auto; }
+  .ci-meta { display: flex; align-items: center; gap: 6px; font-size: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  .ci-genre { font-size: 12px; color: #ddd; }
+  .ci-genre i { color: #646464; font-style: normal; margin: 0 4px; }
+
+  /* Top 10 */
+  .top-card { display: flex; align-items: flex-end; flex: 0 0 auto; cursor: pointer; transition: transform .3s; }
+  .top-card:hover { transform: scale(1.06); }
+  .top-num {
+    font-family: "Bebas Neue"; font-size: clamp(130px, 13vw, 200px); line-height: .78;
+    color: var(--bg); -webkit-text-stroke: 4px #595959; letter-spacing: -14px; margin-right: -4px;
+    user-select: none;
+  }
+  .top-poster {
+    width: clamp(110px, 9vw, 150px); aspect-ratio: 2 / 3; border-radius: 4px;
+    background-size: cover; background-position: center; position: relative; overflow: hidden;
+  }
+  .top-poster .thumb-title { font-size: 17px; }
+
+  /* Search result */
+  .search-result { padding: 110px 4% 60px; display: none; }
+  .search-result.show { display: block; }
+  .search-result h2 { font-size: 18px; color: var(--text-2); font-weight: 500; margin-bottom: 20px; }
+  .search-result h2 b { color: #fff; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 40px 8px; }
+  .grid .card { width: auto; }
+  .empty { color: var(--text-2); padding: 40px 0; line-height: 1.8; }
+
+  .footer { padding: 30px 4% 50px; color: var(--text-3); font-size: 13px; line-height: 1.8; max-width: 1000px; }
+  .footer .proto { display: inline-block; border: 1px solid var(--text-3); padding: 4px 10px; margin-bottom: 12px; }
+
+  /* ---------- Modal ---------- */
+  .modal-bg {
+    position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.7);
+    overflow-y: auto; display: none; padding: 32px 12px;
+  }
+  .modal-bg.show { display: block; animation: fade .25s; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pop { from { transform: scale(.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal {
+    position: relative; max-width: 880px; margin: 0 auto; background: var(--bg-2);
+    border-radius: 8px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.8);
+    animation: pop .3s ease;
+  }
+  .modal-close {
+    position: absolute; top: 14px; right: 14px; z-index: 5; width: 36px; height: 36px;
+    border-radius: 50%; background: var(--bg-2); display: grid; place-items: center;
+  }
+  .modal-close svg { width: 22px; height: 22px; }
+  .modal-hero {
+    position: relative; aspect-ratio: 16 / 8; background-size: cover; background-position: center;
+    display: flex; align-items: flex-end; padding: 0 48px 40px;
+  }
+  .modal-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-2) 2%, transparent 60%); }
+  .modal-hero > * { position: relative; z-index: 2; }
+  .modal-hero h2 { font-size: clamp(32px, 5vw, 54px); font-weight: 900; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,.6); }
+  .modal-body { padding: 0 48px 40px; }
+  .modal-info { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; margin-bottom: 36px; }
+  .modal-info .meta { display: flex; gap: 8px; align-items: center; font-size: 15px; margin-bottom: 14px; flex-wrap: wrap; color: #bcbcbc; }
+  .modal-info p { line-height: 1.7; font-size: 15px; }
+  .modal-side { font-size: 14px; line-height: 1.9; color: #ddd; }
+  .modal-side span { color: #777; }
+  .sec-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; gap: 10px; flex-wrap: wrap; }
+  .sec-head h3 { font-size: 24px; font-weight: 700; }
+  .sec-head small { color: var(--text-2); font-size: 14px; }
+  .stills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .still {
+    background: var(--bg-3); border-radius: 6px; overflow: hidden; cursor: pointer;
+    transition: background .2s, transform .2s;
+  }
+  .still:hover { background: #333; transform: translateY(-3px); }
+  .still-img { position: relative; aspect-ratio: 16 / 9; background-size: cover; background-position: center; }
+  .still-img .play {
+    position: absolute; inset: 0; display: grid; place-items: center; opacity: 0;
+    background: rgba(0,0,0,.35); transition: opacity .2s;
+  }
+  .still:hover .play { opacity: 1; }
+  .play span {
+    display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 20px;
+    background: rgba(0,0,0,.7); border: 1px solid rgba(255,255,255,.7); font-size: 13px; font-weight: 700;
+  }
+  .play svg { width: 16px; height: 16px; }
+  .still-num { position: absolute; left: 10px; top: 8px; font-family: "Bebas Neue"; font-size: 28px; line-height: 1; text-shadow: 0 2px 6px rgba(0,0,0,.8); }
+  .still-ep { position: absolute; right: 8px; bottom: 8px; font-size: 11px; background: rgba(0,0,0,.7); padding: 2px 6px; border-radius: 3px; }
+  .still-body { padding: 12px 14px 16px; }
+  .still-body h4 { font-size: 15px; margin-bottom: 6px; }
+  .still-loc { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--red); font-weight: 700; margin-bottom: 8px; }
+  .still-loc svg { width: 13px; height: 13px; flex: none; }
+  .still-body p { font-size: 13px; color: var(--text-2); line-height: 1.55; }
+
+  /* ---------- Map view ---------- */
+  .mapview { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: none; flex-direction: column; }
+  .mapview.show { display: flex; animation: fade .3s; }
+  .mv-top {
+    height: 60px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 20px;
+    background: #000; border-bottom: 1px solid #222;
+  }
+  .mv-back { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #ddd; padding: 6px 10px 6px 4px; border-radius: 4px; }
+  .mv-back:hover { background: #222; color: #fff; }
+  .mv-back svg { width: 22px; height: 22px; }
+  .mv-crumb { font-size: 15px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mv-crumb b { color: #fff; }
+  .mv-top .logo { margin-left: auto; font-size: 26px; }
+  .mv-main { flex: 1; display: flex; min-height: 0; }
+  .side { width: 400px; flex: none; display: flex; flex-direction: column; background: var(--bg-2); border-right: 1px solid #222; min-height: 0; }
+  .side-scroll { flex: 1; overflow-y: auto; min-height: 0; }
+  .side-scroll::-webkit-scrollbar { width: 8px; }
+  .side-scroll::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+  .scene-card { position: relative; }
+  .scene-img { aspect-ratio: 16 / 9; background-size: cover; background-position: center; position: relative; }
+  .scene-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-2), transparent 55%); }
+  .scene-txt { position: relative; z-index: 2; margin-top: -70px; padding: 0 20px 16px; }
+  .scene-txt .work { font-size: 12px; color: var(--red); font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
+  .scene-txt h2 { font-size: 22px; line-height: 1.3; margin-bottom: 8px; }
+  .scene-txt p { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+  .spot-box {
+    margin: 0 20px 14px; padding: 12px 14px; border-radius: 6px; background: rgba(229,9,20,.12);
+    border: 1px solid rgba(229,9,20,.45); display: flex; gap: 12px; align-items: center; cursor: pointer;
+  }
+  .spot-box:hover { background: rgba(229,9,20,.2); }
+  .spot-box .pin { width: 34px; height: 34px; border-radius: 50%; background: var(--red); display: grid; place-items: center; flex: none; font-size: 17px; }
+  .spot-box b { display: block; font-size: 14px; }
+  .spot-box small { font-size: 12px; color: var(--text-2); }
+  .other-scenes { padding: 0 20px 16px; }
+  .other-scenes h5 { font-size: 13px; color: var(--text-2); font-weight: 500; margin-bottom: 8px; }
+  .os-track { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
+  .os-item { flex: 0 0 110px; cursor: pointer; opacity: .65; transition: opacity .2s; }
+  .os-item:hover, .os-item.on { opacity: 1; }
+  .os-item div { aspect-ratio: 16/9; border-radius: 4px; background-size: cover; background-position: center; border: 2px solid transparent; }
+  .os-item.on div { border-color: var(--red); }
+  .os-item span { display: block; font-size: 11px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ddd; }
+
+  .filters {
+    position: sticky; top: 0; z-index: 5; background: var(--bg-2);
+    padding: 14px 20px 12px; border-top: 1px solid #262626; border-bottom: 1px solid #262626;
+  }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 18px;
+    border: 1px solid #444; font-size: 13px; color: #ddd; background: transparent; transition: all .2s;
+  }
+  .chip:hover { border-color: #888; }
+  .chip .cnt { font-size: 11px; color: var(--text-3); }
+  .chip.on { background: #fff; color: #000; border-color: #fff; font-weight: 700; }
+  .chip.on .cnt { color: #555; }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .filter-sub { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 12px; color: var(--text-2); gap: 8px; }
+  .filter-sub select {
+    background: var(--bg-3); color: #fff; border: 1px solid #444; border-radius: 4px; padding: 4px 6px; font-size: 12px;
+  }
+  .filter-sub .sels { display: flex; gap: 6px; }
+  .place-list { list-style: none; }
+  .place {
+    display: flex; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #262626; cursor: pointer; transition: background .15s;
+  }
+  .place:hover { background: #202020; }
+  .place.on { background: #262626; box-shadow: inset 3px 0 0 var(--red); }
+  .p-img { width: 84px; height: 84px; border-radius: 6px; flex: none; background-size: cover; background-position: center; position: relative; }
+  .p-body { flex: 1; min-width: 0; }
+  .p-cat { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; margin-bottom: 3px; }
+  .p-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .p-meta { font-size: 12px; color: var(--text-2); display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+  .p-meta .star { color: #fbbf24; }
+  .p-desc { font-size: 12px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .p-tags { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+  .p-tags span { font-size: 10px; padding: 2px 6px; border-radius: 3px; background: #2c2c2c; color: #ccc; }
+  .heart { align-self: flex-start; padding: 2px; color: #777; }
+  .heart svg { width: 20px; height: 20px; }
+  .heart.on { color: var(--red); }
+  .heart.on svg { fill: var(--red); }
+  .no-place { padding: 40px 20px; text-align: center; color: var(--text-3); font-size: 14px; line-height: 1.7; }
+
+  .map-wrap { flex: 1; position: relative; min-width: 0; }
+  #map { position: absolute; inset: 0; background: #1b1b1b; }
+  .map-fallback {
+    position: absolute; inset: 0; display: none; place-items: center; text-align: center; padding: 20px;
+    color: var(--text-2); line-height: 1.8; background: repeating-linear-gradient(45deg, #1a1a1a 0 20px, #1e1e1e 20px 40px);
+  }
+  .map-fallback.show { display: grid; }
+  .map-legend {
+    position: absolute; left: 14px; bottom: 26px; z-index: 500; background: rgba(20,20,20,.88);
+    border: 1px solid #333; border-radius: 6px; padding: 10px 12px; font-size: 12px; line-height: 1.9;
+  }
+  .map-legend div { display: flex; align-items: center; gap: 8px; }
+  .map-legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .map-ctrl { position: absolute; right: 14px; top: 14px; z-index: 500; display: flex; flex-direction: column; gap: 8px; }
+  .map-ctrl button {
+    background: rgba(20,20,20,.9); border: 1px solid #444; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #fff;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .map-ctrl button:hover { background: #333; }
+
+  /* Leaflet customizing */
+  .leaflet-container { font-family: inherit; background: #1b1b1b; }
+  .mk {
+    width: 30px; height: 30px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+    display: grid; place-items: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.6);
+    transition: transform .2s;
+  }
+  .mk span { transform: rotate(45deg); font-size: 14px; line-height: 1; }
+  .mk.big { transform: rotate(-45deg) scale(1.3); z-index: 999; }
+  .mk-spot {
+    width: 46px; height: 46px; border-radius: 50%; background: var(--red); border: 3px solid #fff;
+    display: grid; place-items: center; font-size: 21px; box-shadow: 0 0 0 0 rgba(229,9,20,.7);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(229,9,20,.7); }
+    70% { box-shadow: 0 0 0 18px rgba(229,9,20,0); }
+    100% { box-shadow: 0 0 0 0 rgba(229,9,20,0); }
+  }
+  .leaflet-popup-content-wrapper { background: var(--bg-2); color: #fff; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.7); padding: 0; overflow: hidden; }
+  .leaflet-popup-content { margin: 0; width: 240px !important; }
+  .leaflet-popup-tip { background: var(--bg-2); }
+  .leaflet-container a.leaflet-popup-close-button { color: #fff; top: 4px; right: 4px; text-shadow: 0 0 4px #000; }
+  .pop-img { height: 110px; background-size: cover; background-position: center; position: relative; }
+  .emo { position: absolute; inset: 0; display: grid; place-items: center; font-size: 40px; }
+  .pop-img .emo, .thumb .emo { font-size: 54px; }
+  .pop-body { padding: 10px 12px 12px; }
+  .pop-body .p-cat { margin-bottom: 2px; }
+  .pop-body h4 { font-size: 15px; margin-bottom: 4px; }
+  .pop-body .p-meta { margin-bottom: 8px; }
+  .pop-btns { display: flex; gap: 6px; }
+  .pop-btns button { flex: 1; padding: 7px 0; border-radius: 4px; font-size: 12px; font-weight: 700; }
+  .pop-btns .b1 { background: var(--red); color: #fff; }
+  .pop-btns .b1:hover { background: var(--red-dark); }
+  .pop-btns .b2 { background: #333; color: #fff; }
+  .pop-btns .b2:hover { background: #444; }
+  .leaflet-control-attribution { background: rgba(0,0,0,.6) !important; color: #888 !important; }
+  .leaflet-control-attribution a { color: #aaa !important; }
+  .leaflet-bar a { background: #222; color: #fff; border-color: #444; }
+  .leaflet-bar a:hover { background: #333; color: #fff; }
+
+  /* toast */
+  .toast {
+    position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%) translateY(20px); z-index: 999;
+    background: #fff; color: #000; padding: 12px 20px; border-radius: 6px; font-size: 14px; font-weight: 500;
+    opacity: 0; pointer-events: none; transition: all .3s; max-width: 90vw; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .nav { display: none; }
+    .modal-hero { padding: 0 24px 28px; }
+    .modal-body { padding: 0 24px 30px; }
+    .modal-info { grid-template-columns: 1fr; gap: 16px; }
+    .stills { grid-template-columns: repeat(2, 1fr); }
+    .mv-main { flex-direction: column-reverse; }
+    .side { width: 100%; flex: 1; border-right: 0; border-top: 1px solid #222; }
+    .map-wrap { flex: none; height: 42vh; }
+    .scene-img { aspect-ratio: 16/6; }
+    .scene-txt { margin-top: -40px; }
+    .map-legend { display: none; }
+  }
+  @media (max-width: 600px) {
+    .header { gap: 12px; padding: 0 16px; height: 58px; }
+    .logo { font-size: 28px; }
+    .search-box.open input { width: 130px; }
+    .hero { padding: 0 16px; height: 70vh; }
+    .hero-desc { font-size: 15px; }
+    .rows { margin-top: -30px; }
+    .btn { padding: 8px 18px; font-size: 15px; }
+    .track { padding-left: 16px; padding-right: 16px; }
+    .row-title { padding: 0 16px; font-size: 17px; }
+    .card { width: 170px; }
+    .card:hover { transform: none; }
+    .card-info { display: none; }
+    .arrow { display: none; }
+    .stills { grid-template-columns: 1fr; }
+    .modal-bg { padding: 0; }
+    .modal { border-radius: 0; }
+    .mv-top { padding: 0 10px; gap: 8px; }
+    .mv-top .logo { display: none; }
+    .search-result { padding: 90px 16px 40px; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 20px 8px; }
+    .footer { padding: 30px 16px 50px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="header" id="header">
+  <div class="logo" onclick="go('#/')">NET<small>'s trip</small>FLIX</div>
+  <nav class="nav" id="nav">
+    <a class="active" data-filter="all">홈</a>
+    <a data-filter="드라마">드라마</a>
+    <a data-filter="영화">영화</a>
+    <a data-filter="new">NEW! 요즘 뜨는 촬영지</a>
+    <a data-filter="liked">내가 찜한 장소</a>
+  </nav>
+  <div class="header-right">
+    <div class="search-box" id="searchBox">
+      <button class="icon-btn" id="searchBtn" aria-label="검색">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      </button>
+      <input id="searchInput" type="text" placeholder="작품, 촬영지, 지역 검색">
+    </div>
+    <div class="avatar" title="NET 팀">N</div>
+  </div>
+</header>
+
+<!-- ============ HOME ============ -->
+<main id="home">
+  <section class="hero" id="hero"></section>
+  <section class="rows" id="rows"></section>
+</main>
+<section class="search-result" id="searchResult"></section>
+
+<footer class="footer">
+  <div class="proto">PROTOTYPE · 샘플 데이터</div><br>
+  NET's tripFLIX는 영화·드라마 촬영지와 주변 관광지·맛집을 추천하는 서비스의 프로토타입입니다.<br>
+  포스터·스틸컷은 TMDB의 공식 이미지를 불러와 쓰며(저작권은 각 제작사에 있음), 주변 장소 이름·평점·리뷰 수는 모두 시연용으로 임의 생성된 데이터입니다.<br>
+  지도: Tiles © Esri, © OpenStreetMap contributors · 포스터·스틸컷: TMDB · 장소 사진: Lorem Picsum(Unsplash)
+</footer>
+
+<!-- ============ DETAIL MODAL ============ -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal" id="modal"></div>
+</div>
+
+<!-- ============ MAP VIEW ============ -->
+<section class="mapview" id="mapview">
+  <div class="mv-top">
+    <button class="mv-back" id="mvBack">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      명장면 목록
+    </button>
+    <div class="mv-crumb" id="mvCrumb"></div>
+    <div class="logo" onclick="go('#/')">NET<small>'s trip</small>FLIX</div>
+  </div>
+  <div class="mv-main">
+    <aside class="side">
+      <div class="side-scroll" id="sideScroll">
+        <div id="sceneInfo"></div>
+        <div class="filters">
+          <div class="chips" id="chips"></div>
+          <div class="filter-sub">
+            <span id="resultCount"></span>
+            <div class="sels">
+              <select id="radiusSel" aria-label="반경">
+                <option value="999">전체 반경</option>
+                <option value="0.5">500m 이내</option>
+                <option value="1">1km 이내</option>
+                <option value="2">2km 이내</option>
+              </select>
+              <select id="sortSel" aria-label="정렬">
+                <option value="dist">거리순</option>
+                <option value="rating">평점순</option>
+                <option value="review">리뷰많은순</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <ul class="place-list" id="placeList"></ul>
+      </div>
+    </aside>
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="map-fallback" id="mapFallback">
+        <div>🗺️<br><b>지도를 불러오지 못했습니다.</b><br>인터넷 연결을 확인해 주세요.<br>(왼쪽 목록과 필터는 그대로 사용할 수 있어요)</div>
+      </div>
+      <div class="map-ctrl">
+        <button id="recenterBtn">🎬 촬영지로 이동</button>
+        <button id="fitBtn">⤢ 전체 보기</button>
+      </div>
+      <div class="map-legend" id="legend"></div>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* =========================================================
+   1. 샘플 데이터 (임의 데이터)
+   land: 바다 쪽에 장소가 찍히지 않도록, 주변 장소를 배치할 방위각 범위(도, 북=0 시계방향) / maxKm: 최대 거리
+   ========================================================= */
+const WORKS = [
+  {
+    id: 'goblin', poster: 'qZMEiTsNlCQV27hHQE27ZtlPWyv.jpg', back: 'smSbK5cd8T9XHcxEUcems23BDEF.jpg', img: 13, title: '도깨비', type: '드라마', year: 2016, age: '15', genre: ['판타지', '로맨스', '감성'],
+    match: 98, isNew: false, cast: '공유, 김고은, 이동욱', ep: '16부작',
+    colors: ['#3a1c71', '#d76d77'],
+    desc: '불멸의 삶을 끝내기 위해 인간 신부가 필요한 도깨비와 기억상실증 저승사자, 그리고 죽었어야 할 운명의 소녀. 메밀꽃 한 다발로 시작된 그들의 이야기가 남긴 장소들을 따라가 보세요.',
+    scenes: [
+      { still: 'mocVtvYaUSQRCkeQGYc9xKnp0Uv.jpg', img: 77, title: '메밀꽃 한 다발, 첫 소환', ep: '1화', place: '주문진 영진해변 방사제', region: '주문진', addr: '강원 강릉시 주문진읍 교항리', lat: 37.8919, lng: 128.8330, land: [190, 345],
+        desc: '은탁이 촛불을 불어 도깨비를 처음 소환한 방파제. 지금도 빨간 목도리와 메밀꽃을 든 인증샷 명소입니다.' },
+      { still: '8v4QmwHhti1OuGiMc9RoGZsUMuR.jpg', img: 289, title: '단풍 아래 첫 데이트', ep: '5화', place: '덕수궁 돌담길', region: '정동', addr: '서울 중구 정동길', lat: 37.5652, lng: 126.9752,
+        desc: '단풍이 물든 돌담길을 나란히 걷던 장면. 가을이면 노란 은행잎이 길을 덮습니다.' },
+      { still: 'hG0SL39CNBD11jANAAYSWYG5Fo3.jpg', img: 299, title: '문을 열면 다른 세상', ep: '3화', place: '인천 배다리 헌책방골목', region: '배다리', addr: '인천 동구 금곡동', lat: 37.4745, lng: 126.6372,
+        desc: '도깨비의 문이 이어지던 낡은 헌책방 골목. 오래된 책 냄새와 레트로 감성이 가득한 거리입니다.' },
+      { still: 'pdw05wKRPLyMADXK8nWdkOrkYrH.jpg', img: 164, title: '저승사자의 찻집', ep: '2화', place: '북촌 한옥마을', region: '북촌', addr: '서울 종로구 계동길', lat: 37.5826, lng: 126.9850,
+        desc: '저승사자가 망자에게 차를 건네던 한옥 찻집 골목. 기와지붕 너머 서울 도심이 보입니다.' }
+    ]
+  },
+  {
+    id: 'parasite', poster: 'jjHccoFjbqlfr4VGLVLT7yek0Xn.jpg', back: 'TU9NIjwzjoKPwQHoHshkFcQUCG.jpg', img: 57, title: '기생충', type: '영화', year: 2019, age: '15', genre: ['블랙코미디', '스릴러'],
+    match: 97, isNew: false, cast: '송강호, 이선균, 조여정, 최우식', ep: '132분',
+    colors: ['#0f2027', '#2c5364'],
+    desc: '전원 백수인 기택네 가족과 언덕 위 박사장네 가족. 계단을 오르내리며 그려진 두 가족의 이야기가 지나간 서울의 골목을 걸어보세요.',
+    scenes: [
+      { still: 'xOXIXRH6F2CDeEPwVSBe6y2v25V.jpg', img: 276, title: '폭우 속 끝없는 계단', ep: '01:32:10', place: '자하문 터널 계단', region: '부암동', addr: '서울 종로구 부암동', lat: 37.5936, lng: 126.9664,
+        desc: '폭우가 쏟아지던 밤, 기택 가족이 집으로 달려 내려가던 계단. 영화 속 계급을 상징하는 대표 장면입니다.' },
+      { still: 'p0giX7IG8hXv6lr1KE3jFn0VqXA.jpg', img: 308, title: '동네 슈퍼 앞 대화', ep: '00:08:40', place: '아현동 돼지쌀슈퍼', region: '아현동', addr: '서울 마포구 손기정로', lat: 37.5543, lng: 126.9566,
+        desc: '기우와 민혁이 술을 마시며 과외 이야기를 나누던 동네 슈퍼. 영화 개봉 후 순례지가 되었습니다.' },
+      { still: 'ny5aCtglk2kceGAuAdiyqbhBBAf.jpg', img: 212, title: '피자 박스 접기', ep: '00:04:15', place: '노량진 골목길', region: '노량진', addr: '서울 동작구 노량진동', lat: 37.5130, lng: 126.9420,
+        desc: '반지하 집 근처, 가족이 피자 박스를 접던 동네 분위기를 닮은 골목입니다.' }
+    ]
+  },
+  {
+    id: 'woo', poster: 'yv57TccCkgdy3St7rspBPKROeRK.jpg', back: 'tmgtlnBnoFvk52xZBO7Z0pTmN9b.jpg', img: 255, title: '이상한 변호사 우영우', type: '드라마', year: 2022, age: '12', genre: ['휴먼', '법정', '힐링'],
+    match: 96, isNew: true, cast: '박은빈, 강태오, 강기영', ep: '16부작',
+    colors: ['#134e5e', '#71b280'],
+    desc: '천재적인 두뇌와 자폐 스펙트럼을 동시에 가진 신입 변호사 우영우의 대형 로펌 생존기. 고래처럼 자유로운 그녀의 발자취를 찾아 떠나요.',
+    scenes: [
+      { still: 'qiJdZYSSGMU9o2pLqtUYj8Wh9zu.jpg', img: 17, title: '소덕동 팽나무', ep: '7화', place: '창원 북부리 팽나무', region: '대산면', addr: '경남 창원시 의창구 대산면 북부리', lat: 35.3427, lng: 128.5593,
+        desc: '마을을 지키는 수백 년 된 팽나무. 방영 후 천연기념물로 지정되며 큰 화제가 되었습니다.' },
+      { still: '39owosjolYd3gKufgM9jMdSSk9t.jpg', img: 43, title: '회전문 앞 망설임', ep: '1화', place: '역삼 센터필드', region: '역삼', addr: '서울 강남구 테헤란로', lat: 37.5050, lng: 127.0410,
+        desc: '영우가 첫 출근 날 회전문 앞에서 망설이던 한바다 로펌 건물입니다.' },
+      { still: 'k57lxL2LuD0GSVvVjtkoLen5Min.jpg', img: 288, title: '김밥집의 아침', ep: '2화', place: '수원 행궁동', region: '행궁동', addr: '경기 수원시 팔달구 신풍동', lat: 37.2828, lng: 127.0140,
+        desc: '영우가 가장 좋아하는 김밥처럼 소박한 행궁동 골목. 화성 성곽과 카페 거리가 이어집니다.' }
+    ]
+  },
+  {
+    id: 'camellia', poster: 'HAbVZnRaPu4dm9LkTsIYs6JAnc.jpg', back: 'rF0gzMOd3pDC8wPQaVX3khtPZZc.jpg', img: 322, title: '동백꽃 필 무렵', type: '드라마', year: 2019, age: '15', genre: ['로맨스', '스릴러', '휴먼'],
+    match: 95, isNew: false, cast: '공효진, 강하늘', ep: '40부작',
+    colors: ['#c31432', '#240b36'],
+    desc: '편견에 갇힌 동백이와 그녀를 무조건 응원하는 촌므파탈 황용식의 사랑 이야기. 옹산의 실제 무대, 포항 구룡포로 떠나 보세요.',
+    scenes: [
+      { still: '7OCAlRz13R9HZIbXTNUfyEAYyvf.jpg', img: 69, title: '동백이의 까멜리아', ep: '1화', place: '구룡포 일본인가옥거리', region: '구룡포', addr: '경북 포항시 남구 구룡포읍', lat: 35.9884, lng: 129.5555, land: [175, 345],
+        desc: '동백이가 운영하던 술집 까멜리아가 있던 골목. 근대 가옥들이 그대로 남아 있습니다.' },
+      { still: '3PNA3ebeO4hdPFy0qs980z3QmZz.jpg', img: 316, title: '계단 위 고백', ep: '9화', place: '구룡포 공원 계단', region: '구룡포', addr: '경북 포항시 남구 구룡포읍 구룡포길', lat: 35.9891, lng: 129.5548, land: [175, 345],
+        desc: '용식이 동백에게 마음을 전하던 돌계단. 계단 위에서 구룡포 항구가 한눈에 보입니다.' },
+      { still: 'vedAdBWNA4NjSi5SMpUQtXhePfz.jpg', img: 244, title: '바다를 보며', ep: '20화', place: '호미곶 해맞이광장', region: '호미곶', addr: '경북 포항시 남구 호미곶면', lat: 36.0768, lng: 129.5676, land: [185, 265],
+        desc: '바다 위로 솟은 상생의 손 앞에서 두 사람이 나란히 바다를 바라보던 장면입니다.' }
+    ]
+  },
+  {
+    id: 'chacha', poster: 'ub2ZaobABSYtkWKaEycWmMjkorP.jpg', back: 'ubQQrMAsyLuLjp0UEbvtX85Al3T.jpg', img: 215, title: '갯마을 차차차', type: '드라마', year: 2021, age: '12', genre: ['로맨틱코미디', '힐링'],
+    match: 94, isNew: true, cast: '신민아, 김선호', ep: '16부작',
+    colors: ['#2193b0', '#6dd5ed'],
+    desc: '현실주의 치과의사 윤혜진과 만능 백수 홍반장이 바닷마을 공진에서 벌이는 힐링 로맨스. 푸른 바다와 시장 골목을 따라 걸어봐요.',
+    scenes: [
+      { still: '1GPVKwYbQrQzr7yZyH0Ighk4pji.jpg', img: 12, title: '공진 시장 한 바퀴', ep: '2화', place: '청하공진시장', region: '청하', addr: '경북 포항시 북구 청하면', lat: 36.1977, lng: 129.3407, land: [180, 360],
+        desc: '홍반장이 동네 사람들과 인사하며 걷던 시장. 드라마 속 공진시장 간판이 그대로 남아 있어요.' },
+      { still: '2avhn5tACIdOp9F5EhNytbChJib.jpg', img: 74, title: '혜진이의 바다', ep: '1화', place: '청진3리 해변', region: '청진리', addr: '경북 포항시 북구 청하면 청진리', lat: 36.2040, lng: 129.3720, land: [195, 345],
+        desc: '혜진이 처음 공진에 와서 신발을 벗고 바다를 바라보던 해변입니다.' },
+      { still: '34w8KFW838QUwZaLmcC3HLY75bp.jpg', img: 317, title: '홍반장의 배', ep: '6화', place: '이가리 닻 전망대', region: '이가리', addr: '경북 포항시 북구 청하면 이가리', lat: 36.1890, lng: 129.3870, land: [195, 345],
+        desc: '바다로 뻗은 닻 모양 전망대. 두 사람이 노을을 보던 장면의 배경입니다.' }
+    ]
+  },
+  {
+    id: 'sunshine', poster: 'uSavP0BSfnyUaJe62f0ZTXIHLs8.jpg', back: 'gQwa6X2nmTHkmDgAifU4wacNqp4.jpg', img: 142, title: '미스터 션샤인', type: '드라마', year: 2018, age: '15', genre: ['시대극', '로맨스', '액션'],
+    match: 93, isNew: false, cast: '이병헌, 김태리, 유연석', ep: '24부작',
+    colors: ['#614385', '#516395'],
+    desc: '신미양요 때 미국으로 건너간 소년이 미국 군인 신분으로 조선에 돌아와 벌어지는 이야기. 1900년대 한성의 거리를 그대로 걸어보세요.',
+    scenes: [
+      { still: 'iFPMDgCKntxjW7X13S8Vfic3nzJ.jpg', img: 193, title: '글로리 호텔 앞', ep: '3화', place: '논산 선샤인랜드', region: '연무읍', addr: '충남 논산시 연무읍 봉황로', lat: 36.1135, lng: 127.0990,
+        desc: '1900년대 한성 거리를 재현한 세트장. 드라마 속 거리를 의상 대여로 체험할 수 있습니다.' },
+      { still: '4XSasIZpRE3PnNEJnOqqlcVCQ6U.jpg', img: 15, title: '정자 위의 약속', ep: '12화', place: '안동 만휴정', region: '길안면', addr: '경북 안동시 길안면 묵계리', lat: 36.4766, lng: 128.8735,
+        desc: '애신과 유진이 "합시다, 러브"를 나누던 정자. 계곡 위 외나무다리가 인상적입니다.' }
+    ]
+  },
+  {
+    id: 'winter', poster: 'azS7WUisS4Ay4cPqF8rlJiIo0Sx.jpg', back: 'zREcbBw8AqpJTyPsqvMECuThcXc.jpg', img: 190, title: '겨울연가', type: '드라마', year: 2002, age: '12', genre: ['멜로', '클래식'],
+    match: 91, isNew: false, cast: '배용준, 최지우', ep: '20부작',
+    colors: ['#83a4d4', '#b6fbff'],
+    desc: '첫사랑의 기억과 운명적인 재회. 한류의 시작이 된 드라마 속 눈 내리는 남이섬과 춘천의 풍경을 만나요.',
+    scenes: [
+      { still: 'hTZjucJMaM1yVHYDHL10oGJA28x.jpg', img: 229, title: '메타세쿼이아 길', ep: '4화', place: '남이섬 메타세쿼이아길', region: '남이섬', addr: '강원 춘천시 남산면 남이섬길', lat: 37.7905, lng: 127.5260, land: [240, 360],
+        desc: '준상과 유진이 함께 걷던 메타세쿼이아 길. 겨울연가 하면 떠오르는 상징적인 장소입니다.' },
+      { still: 'zREcbBw8AqpJTyPsqvMECuThcXc.jpg', img: 254, title: '첫 눈 오는 날', ep: '2화', place: '춘천 준상이네 집', region: '춘천', addr: '강원 춘천시 소양로', lat: 37.8847, lng: 127.7270,
+        desc: '준상이네 집으로 등장한 골목. 춘천 명동 닭갈비 골목과 가깝습니다.' }
+    ]
+  },
+  {
+    id: 'architecture', poster: '6ChBkMt5fwYPtKvbtq8irLfuKHc.jpg', back: '6hQqAMD9GnAELB7CgNZRtinbP8G.jpg', img: 203, title: '건축학개론', type: '영화', year: 2012, age: '12', genre: ['멜로', '첫사랑'],
+    match: 92, isNew: false, cast: '엄태웅, 한가인, 이제훈, 수지', ep: '118분',
+    colors: ['#ee9ca7', '#ffdde1'],
+    desc: '서른다섯 건축가 승민 앞에 15년 만에 나타난 첫사랑 서연. 그녀를 위해 지은 제주의 집과 스무 살의 정릉을 거닐어 보세요.',
+    scenes: [
+      { still: 'nj1d0QDr1iYwqnSoNfYuNpDyQgz.jpg', img: 270, title: '서연의 집', ep: '01:20:05', place: '제주 서연의 집', region: '위미리', addr: '제주 서귀포시 남원읍 위미리', lat: 33.2716, lng: 126.6640, land: [270, 450],
+        desc: '승민이 서연을 위해 설계한 바닷가 집. 지금은 바다가 보이는 카페로 운영됩니다.' },
+      { still: 'mhYkTN7wcb53nzEerIt0RSojLCw.jpg', img: 112, title: '스무 살의 한옥', ep: '00:35:20', place: '정릉 한옥 골목', region: '정릉', addr: '서울 성북구 정릉동', lat: 37.6060, lng: 127.0060,
+        desc: '스무 살 승민과 서연이 숙제를 하러 다니던 정릉의 골목길입니다.' }
+    ]
+  },
+  {
+    id: 'attorney', poster: '5tm4Rv24NYdGpuWzA6aF5h1qm0E.jpg', back: 'AqUBl0HZibEpfvyMfJXOT4CkyfY.jpg', img: 323, title: '변호인', type: '영화', year: 2013, age: '15', genre: ['드라마', '법정', '실화'],
+    match: 90, isNew: false, cast: '송강호, 김영애, 임시완', ep: '127분',
+    colors: ['#232526', '#414345'],
+    desc: '돈 없고 빽 없는 세무 변호사 송우석의 인생을 바꾼 다섯 번의 공판. 부산 영도 바닷가 마을을 걸어보세요.',
+    scenes: [
+      { still: 'eJzZv2Olsav8OnZr667LzsvARe5.jpg', img: 271, title: '바다를 보는 집', ep: '00:22:40', place: '흰여울문화마을', region: '영도', addr: '부산 영도구 영선동', lat: 35.0785, lng: 129.0450, land: [15, 95], maxKm: 1.8,
+        desc: '우석이 살던 바닷가 절벽 마을. 하얀 담장과 푸른 바다가 어우러진 부산의 대표 명소입니다.' },
+      { still: 'waxmzSvhc2VuFx3arM85WbdUiuT.jpg', img: 281, title: '국밥집의 정', ep: '00:12:00', place: '부산 수정동 골목', region: '수정동', addr: '부산 동구 수정동', lat: 35.1240, lng: 129.0450,
+        desc: '우석이 신세를 졌던 국밥집 분위기의 골목. 산복도로 전망이 펼쳐집니다.' }
+    ]
+  },
+  {
+    id: 'twentyfive', poster: '706Ar36Q1XT3056JQHoYpJbh6W0.jpg', back: '2Yr8QxputyVoWPSTbXCUkP3aalm.jpg', img: 204, title: '스물다섯 스물하나', type: '드라마', year: 2022, age: '15', genre: ['청춘', '로맨스'],
+    match: 95, isNew: true, cast: '김태리, 남주혁', ep: '16부작',
+    colors: ['#f7971e', '#ffd200'],
+    desc: '시대에 꿈을 빼앗긴 청춘들의 방황과 성장. 1998년 두 사람이 달리던 터널과 바닷가를 찾아가 보세요.',
+    scenes: [
+      { still: 'anaxig27VmbM1JNklRKuyGyqGYg.jpg', img: 195, title: '터널에서 외친 이름', ep: '2화', place: '전주 한옥마을 골목', region: '전주', addr: '전북 전주시 완산구 풍남동', lat: 35.8150, lng: 127.1530,
+        desc: '희도와 이진이 함께 걷던 한옥 골목. 밤이 되면 청사초롱이 길을 밝힙니다.' },
+      { still: 'bc7JsaiNnLKIlBQIjs3xMI0ZJ3S.jpg', img: 110, title: '바닷가의 무지개', ep: '8화', place: '안면도 꽃지해변', region: '안면도', addr: '충남 태안군 안면읍 승언리', lat: 36.4975, lng: 126.3340, land: [0, 150],
+        desc: '두 사람이 무지개를 바라보던 서해 바다. 할미·할아비 바위 사이로 지는 노을이 아름답습니다.' }
+    ]
+  }
+];
+
+/* 주변 장소 생성용 이름 풀 (임의 데이터) */
+const CATS = {
+  attraction: { label: '관광지', icon: '🏛️', color: 'var(--c-attraction)', hex: '#3b82f6', n: 6,
+    names: ['{r} 전망대', '{r} 해안산책로', '{r} 역사박물관', '{r} 벽화마을', '{r} 수목원', '{r} 문화의거리', '{r} 빨간등대', '{r} 전통시장', '{r} 시립미술관', '{r} 둘레길', '{r} 근대문화관', '{r} 출렁다리'],
+    descs: ['포토스팟이 많은 산책 코스', '현지인이 추천하는 숨은 명소', '아이와 함께 가기 좋은 곳', '노을 맛집으로 유명한 곳', '사계절 풍경이 아름다운 곳'],
+    tags: ['포토존', '무료입장', '야경', '산책', '주차가능', '반려동물'],
+    imgs: [11, 16, 28, 37, 49, 58, 62, 66, 84, 124, 125, 128, 155, 174, 176, 177, 182, 188, 191, 197, 211, 216, 227, 231, 235, 249, 287, 327, 328, 353, 354] },
+  food: { label: '식당', icon: '🍽️', color: 'var(--c-food)', hex: '#f59e0b', n: 6,
+    names: ['{r} 할매국밥', '바다정 횟집', '{r} 막국수', '골목 칼국수', '숯불 닭갈비', '한우명가 {r}점', '엄마손 백반', '{r} 순두부', '해물짬뽕관', '돼지국밥 본점', '{r} 생선구이', '만두당'],
+    descs: ['30년 전통의 노포', '촬영팀이 다녀간 맛집', '웨이팅 필수 로컬 맛집', '혼밥하기 좋은 식당', '푸짐한 한상차림'],
+    tags: ['웨이팅', '노포', '혼밥가능', '단체석', '주차가능', '방송출연'],
+    imgs: [null] },
+  cafe: { label: '카페', icon: '☕', color: 'var(--c-cafe)', hex: '#c08a3e', n: 5,
+    names: ['카페 오션뷰', '{r} 로스터리', '온기 베이커리', '달빛다방', '카페 소요', '브루잉랩', '{r} 한옥찻집', '슬로우커피', '모래알 카페', '구름정원'],
+    descs: ['뷰가 좋은 루프탑 카페', '직접 굽는 빵이 유명한 곳', '조용히 머물기 좋은 공간', '시그니처 라떼 맛집', '드라마 굿즈를 파는 카페'],
+    tags: ['루프탑', '디저트', '오션뷰', '대형카페', '노키즈존', '주차가능'],
+    imgs: [30, 42, 63, 225, 326, 163, 192, 312] },
+  stay: { label: '숙소', icon: '🛏️', color: 'var(--c-stay)', hex: '#8b5cf6', n: 3,
+    names: ['{r} 게스트하우스', '스테이 {r}', '호텔 노을', '한옥스테이 담', '{r} 펜션', '오션 레지던스'],
+    descs: ['촬영지 도보권 숙소', '조식이 맛있는 숙소', '감성 독채 스테이'],
+    tags: ['조식', '주차가능', '독채', '바베큐', '오션뷰'],
+    imgs: [76, 78, 206, 305, 311, 48] }
+};
+const CAT_KEYS = Object.keys(CATS);
+
+/* =========================================================
+   2. 유틸
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function hashStr(s) { let h = 1779033703; for (let i = 0; i < s.length; i++) { h = Math.imul(h ^ s.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; } return h >>> 0; }
+function rng(seed) { let a = seed; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function shuffle(arr, r) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function distKm(a, b, c, d) {
+  const R = 6371, toR = x => x * Math.PI / 180;
+  const dLat = toR(c - a), dLng = toR(d - b);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(toR(a)) * Math.cos(toR(c)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+const fmtDist = km => km < 1 ? Math.round(km * 1000 / 10) * 10 + 'm' : km.toFixed(1) + 'km';
+const walkMin = km => Math.max(1, Math.round(km / 4.2 * 60));
+
+/* 이미지: 임의 사진(picsum, 사진 번호 지정) + 사진을 못 불러오면 작품 컬러 그라데이션이 보이도록 겹쳐서 사용 */
+function photo(img, w, h, colors, shade = true) {
+  const c = colors || ['#333', '#111'];
+  const layers = [];
+  if (shade) layers.push('linear-gradient(to top, rgba(0,0,0,.65), rgba(0,0,0,0) 55%)');
+  [].concat(img).forEach(src => {
+    if (src == null) return;
+    if (typeof src === 'string') layers.push(`url('${tmdb(src, w)}')`);   // 공식 포스터·스틸컷 (TMDB)
+    else layers.push(`url('https://picsum.photos/id/${src}/${w}/${h}')`);  // 불러오지 못할 때 대신 보일 예비 사진
+  });
+  layers.push(`linear-gradient(135deg, ${c[0]}, ${c[1]})`);
+  return `background-image:${layers.join(',')};`;
+}
+/* TMDB 이미지 주소: 요청 폭에 맞는 크기 선택 */
+function tmdb(path, w) {
+  const size = w > 900 ? 'w1280' : w > 400 ? 'w780' : w > 200 ? 'w342' : 'w185';
+  return `https://image.tmdb.org/t/p/${size}/${path}`;
+}
+/* 주변 장소 이미지: 식당은 음식 이모지 타일, 나머지는 카테고리에 맞는 사진 */
+const FOOD_EMOJI = [['국밥', '🍲'], ['순두부', '🍲'], ['횟집', '🐟'], ['생선', '🐟'], ['국수', '🍜'], ['칼국수', '🍜'], ['짬뽕', '🍜'], ['닭갈비', '🍗'], ['한우', '🥩'], ['백반', '🍚'], ['만두', '🥟']];
+const placeImg = (p, w, h) => photo(p.img, w, h, [CATS[p.cat].hex, '#151515'], false);
+const placeEmo = p => p.cat === 'food' ? `<span class="emo">${(FOOD_EMOJI.find(([k]) => p.name.includes(k)) || [0, '🍽️'])[1]}</span>` : '';
+
+const ICON = {
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>',
+  info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-5M12 8h.01"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg>',
+  like: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10v11H3V10zM7 10l4-8a3 3 0 0 1 3 3v4h6a2 2 0 0 1 2 2.3l-1.4 8A2 2 0 0 1 18.6 21H7"/></svg>',
+  down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>',
+  left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>',
+  right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>',
+  close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>',
+  map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>',
+  heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>'
+};
+
+const state = {
+  myList: new Set(),          // 찜한 작품
+  likedPlaces: new Map(),     // 찜한 장소 id -> {place, workId, sceneIdx}
+  work: null, sceneIdx: 0,
+  places: [], filter: 'all', radius: 999, sort: 'dist', selected: null
+};
+
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2200);
+}
+function go(hash) { if (location.hash === hash) route(); else location.hash = hash; }
+const findWork = id => WORKS.find(w => w.id === id);
+
+/* =========================================================
+   3. 홈 화면 (히어로 + 가로 슬라이드 Row)
+   ========================================================= */
+function renderHero() {
+  const w = findWork('goblin');
+  const hero = $('#hero');
+  hero.setAttribute('style', photo([w.back, w.img], 1600, 900, w.colors, false));
+  hero.innerHTML = `
+    <div class="hero-content">
+      <div class="hero-tag"><b>N</b> 촬영지 시리즈</div>
+      <h1 class="hero-title">${esc(w.title)}</h1>
+      <div class="hero-meta">
+        <span class="match">${w.match}% 일치</span><span>${w.year}</span>
+        <span class="age">${w.age}+</span><span>${esc(w.ep)}</span><span class="hd">HD</span>
+        <span>· 촬영지 ${w.scenes.length}곳</span>
+      </div>
+      <p class="hero-desc">${esc(w.desc)}</p>
+      <div class="hero-btns">
+        <button class="btn btn-white" onclick="go('#/scene/${w.id}/0')">${ICON.play} 촬영지 바로가기</button>
+        <button class="btn btn-gray" onclick="go('#/work/${w.id}')">${ICON.info} 상세 정보</button>
+      </div>
+    </div>`;
+}
+
+function cardHTML(w, opt = {}) {
+  const inList = state.myList.has(w.id);
+  return `
+  <div class="card" data-work="${w.id}">
+    <div class="thumb" style="${photo([w.back, w.img], 480, 270, w.colors)}">
+      ${w.isNew ? '<span class="new-badge">NEW</span>' : ''}
+      <div class="thumb-title">${esc(w.title)}</div>
+    </div>
+    <div class="card-info">
+      <div class="ci-btns">
+        <button class="circle white" data-act="map" title="첫 번째 촬영지 지도">${ICON.play}</button>
+        <button class="circle" data-act="list" title="내가 찜한 작품">${inList ? ICON.check : ICON.plus}</button>
+        <button class="circle" data-act="like" title="좋아요">${ICON.like}</button>
+        <button class="circle more" data-act="more" title="상세 정보">${ICON.down}</button>
+      </div>
+      <div class="ci-meta"><span class="match">${w.match}% 일치</span><span class="age">${w.age}+</span><span>${w.type}</span><span class="hd">HD</span></div>
+      <div class="ci-genre">${w.genre.map(esc).join('<i>•</i>')}<i>•</i>촬영지 ${w.scenes.length}곳</div>
+    </div>
+  </div>`;
+}
+
+function topHTML(w, i) {
+  return `
+  <div class="top-card" data-work="${w.id}">
+    <div class="top-num">${i + 1}</div>
+    <div class="top-poster" style="${photo([w.poster, w.img], 300, 450, w.colors, false)}" title="${esc(w.title)}"></div>
+  </div>`;
+}
+
+function rowHTML(title, items, sub, isTop) {
+  if (!items.length) return '';
+  return `
+  <div class="row">
+    <h2 class="row-title">${esc(title)} <span>${esc(sub || '모두 보기 ›')}</span></h2>
+    <div class="row-wrap">
+      <button class="arrow left" aria-label="이전">${ICON.left}</button>
+      <div class="track">${items.map((w, i) => isTop ? topHTML(w, i) : cardHTML(w)).join('')}</div>
+      <button class="arrow right" aria-label="다음">${ICON.right}</button>
+    </div>
+  </div>`;
+}
+
+function renderRows(filter = 'all') {
+  const rows = $('#rows');
+  let html = '';
+  if (filter === 'all') {
+    const top = [...WORKS].sort((a, b) => b.match - a.match).slice(0, 10);
+    html += rowHTML('지금 뜨는 촬영지 여행', shuffle(WORKS, rng(7)));
+    html += rowHTML("오늘 Net's tripFLIX의 TOP 10 촬영지", top, '', true);
+    html += rowHTML('드라마 속 그 장소', WORKS.filter(w => w.type === '드라마'));
+    html += rowHTML('영화 속 그 장소', WORKS.filter(w => w.type === '영화'));
+    html += rowHTML('바다가 보이는 촬영지', WORKS.filter(w => w.scenes.some(s => s.land)));
+    html += rowHTML('서울에서 가까운 촬영지', WORKS.filter(w => w.scenes.some(s => s.lat > 37.2 && s.lat < 37.8 && s.lng > 126.6 && s.lng < 127.3)));
+    const mine = WORKS.filter(w => state.myList.has(w.id));
+    html += rowHTML('내가 찜한 작품', mine);
+  } else if (filter === 'new') {
+    html += rowHTML('NEW! 요즘 뜨는 촬영지', WORKS.filter(w => w.isNew));
+    html += rowHTML('다시 보는 명작 촬영지', WORKS.filter(w => !w.isNew));
+  } else if (filter === 'liked') {
+    html += likedPlacesHTML();
+  } else {
+    html += rowHTML(`${filter} 전체`, WORKS.filter(w => w.type === filter));
+    html += rowHTML(`인기 ${filter} TOP 10`, WORKS.filter(w => w.type === filter).sort((a, b) => b.match - a.match), '', true);
+  }
+  rows.innerHTML = html;
+  updateArrows();
+}
+
+function likedPlacesHTML() {
+  const items = [...state.likedPlaces.values()];
+  if (!items.length) {
+    return `<div class="row"><h2 class="row-title">내가 찜한 장소</h2>
+      <p class="empty" style="padding:10px 4%">아직 찜한 장소가 없어요.<br>작품 → 명장면을 클릭한 뒤, 주변 장소 목록의 ♡ 를 눌러 저장해 보세요.</p></div>`;
+  }
+  return `<div class="row"><h2 class="row-title">내가 찜한 장소 (${items.length})</h2>
+    <div class="row-wrap"><button class="arrow left" aria-label="이전">${ICON.left}</button><div class="track">${items.map(({ place: p, workId, sceneIdx }) => {
+      const w = findWork(workId), c = CATS[p.cat];
+      return `<div class="card" data-goto="#/scene/${workId}/${sceneIdx}" data-place="${p.id}">
+        <div class="thumb" style="${placeImg(p, 480, 270)}">${placeEmo(p)}
+          <div class="thumb-title" style="font-size:17px">${c.icon} ${esc(p.name)}</div>
+        </div>
+        <div class="card-info"><div class="ci-meta"><span style="color:${c.hex};font-weight:700">${c.label}</span><span>★ ${p.rating}</span></div>
+        <div class="ci-genre">${esc(w.title)}<i>•</i>${esc(w.scenes[sceneIdx].place)}에서 ${fmtDist(p.dist)}</div></div>
+      </div>`;
+    }).join('')}</div><button class="arrow right" aria-label="다음">${ICON.right}</button></div></div>`;
+}
+
+/* 좌우 화살표: 스크롤할 필요가 없으면 숨김 */
+function updateArrows() {
+  document.querySelectorAll('.row-wrap').forEach(wrap => {
+    const t = wrap.querySelector('.track');
+    const l = wrap.querySelector('.arrow.left'), r = wrap.querySelector('.arrow.right');
+    if (!t || !l) return;
+    const max = t.scrollWidth - t.clientWidth;
+    l.style.visibility = t.scrollLeft > 5 ? 'visible' : 'hidden';
+    r.style.visibility = t.scrollLeft < max - 5 ? 'visible' : 'hidden';
+  });
+}
+
+/* 홈 화면 클릭 처리 (이벤트 위임) */
+function onHomeClick(e) {
+  const arrow = e.target.closest('.arrow');
+  if (arrow) {
+    const t = arrow.parentElement.querySelector('.track');
+    t.scrollBy({ left: (arrow.classList.contains('left') ? -1 : 1) * t.clientWidth * 0.85 });
+    return;
+  }
+  const gotoEl = e.target.closest('[data-goto]');
+  if (gotoEl) { pendingPlace = gotoEl.dataset.place || null; go(gotoEl.dataset.goto); return; }
+  const card = e.target.closest('[data-work]');
+  if (!card) return;
+  const id = card.dataset.work;
+  const act = e.target.closest('[data-act]')?.dataset.act;
+  if (act === 'map') go(`#/scene/${id}/0`);
+  else if (act === 'list') toggleMyList(id);
+  else if (act === 'like') toast(`👍 '${findWork(id).title}'을(를) 좋아합니다`);
+  else go(`#/work/${id}`);
+}
+
+function toggleMyList(id) {
+  const w = findWork(id);
+  if (state.myList.has(id)) { state.myList.delete(id); toast(`'${w.title}'을(를) 찜 목록에서 뺐어요`); }
+  else { state.myList.add(id); toast(`'${w.title}'을(를) 찜 목록에 추가했어요`); }
+  const activeNav = document.querySelector('.nav a.active')?.dataset.filter || 'all';
+  if (!$('#searchResult').classList.contains('show')) renderRows(activeNav); else renderSearch($('#searchInput').value);
+  if ($('#modalBg').classList.contains('show') && state.work) renderModal(state.work);
+}
+
+/* 검색 */
+function renderSearch(q) {
+  q = q.trim();
+  const box = $('#searchResult');
+  if (!q) { box.classList.remove('show'); $('#home').style.display = ''; return; }
+  const k = q.toLowerCase();
+  const res = WORKS.filter(w =>
+    [w.title, w.type, w.cast, ...w.genre, ...w.scenes.flatMap(s => [s.place, s.region, s.addr, s.title])]
+      .some(t => t.toLowerCase().includes(k)));
+  $('#home').style.display = 'none';
+  box.classList.add('show');
+  box.innerHTML = `<h2>'<b>${esc(q)}</b>' 검색 결과 ${res.length}건</h2>` +
+    (res.length ? `<div class="grid">${res.map(w => cardHTML(w)).join('')}</div>`
+      : `<p class="empty">일치하는 작품이나 촬영지가 없습니다.<br>추천 검색어: 도깨비, 포항, 서울, 바다, 로맨스</p>`);
+}
+
+/* =========================================================
+   4. 상세 모달 (편 목록 대신 명장면 스틸컷)
+   ========================================================= */
+function renderModal(w) {
+  const inList = state.myList.has(w.id);
+  $('#modal').innerHTML = `
+    <button class="modal-close" data-close aria-label="닫기">${ICON.close}</button>
+    <div class="modal-hero" style="${photo([w.back, w.img], 1200, 600, w.colors, false)}">
+      <div>
+        <h2>${esc(w.title)}</h2>
+        <div class="hero-btns" style="margin-top:0">
+          <button class="btn btn-white" onclick="go('#/scene/${w.id}/0')">${ICON.map} 촬영지 지도</button>
+          <button class="circle" style="width:42px;height:42px" onclick="toggleMyList('${w.id}')" title="찜하기">${inList ? ICON.check : ICON.plus}</button>
+          <button class="circle" style="width:42px;height:42px" onclick="toast('👍 좋아요를 눌렀어요')" title="좋아요">${ICON.like}</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-info">
+        <div>
+          <div class="meta"><span class="match">${w.match}% 일치</span><span>${w.year}</span><span class="age">${w.age}+</span><span>${esc(w.ep)}</span><span class="hd">HD</span></div>
+          <p>${esc(w.desc)}</p>
+        </div>
+        <div class="modal-side">
+          <div><span>출연: </span>${esc(w.cast)}</div>
+          <div><span>장르: </span>${w.genre.map(esc).join(', ')}</div>
+          <div><span>촬영 지역: </span>${[...new Set(w.scenes.map(s => s.addr.split(' ').slice(0, 2).join(' ')))].map(esc).join(', ')}</div>
+        </div>
+      </div>
+      <div class="sec-head">
+        <h3>명장면 스틸컷</h3>
+        <small>장면을 클릭하면 촬영지와 주변 관광지·맛집을 지도에서 볼 수 있어요</small>
+      </div>
+      <div class="stills">
+        ${w.scenes.map((s, i) => `
+          <div class="still" data-scene="${i}">
+            <div class="still-img" style="${photo([s.still, s.img], 480, 270, w.colors)}">
+              <span class="still-num">${String(i + 1).padStart(2, '0')}</span>
+              <span class="still-ep">${esc(s.ep)}</span>
+              <div class="play"><span>${ICON.pin} 촬영지 보기</span></div>
+            </div>
+            <div class="still-body">
+              <h4>${esc(s.title)}</h4>
+              <div class="still-loc">${ICON.pin}${esc(s.place)}</div>
+              <p>${esc(s.desc)}</p>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function openModal(id) {
+  const w = findWork(id);
+  if (!w) { go('#/'); return; }
+  state.work = w;
+  renderModal(w);
+  const bg = $('#modalBg');
+  if (!bg.classList.contains('show')) { bg.classList.add('show'); bg.scrollTop = 0; }
+  document.body.classList.add('no-scroll');
+}
+function closeModal() {
+  $('#modalBg').classList.remove('show');
+  document.body.classList.remove('no-scroll');
+}
+
+/* =========================================================
+   5. 지도 화면 (촬영지 + 주변 관광지/식당/카페/숙소)
+   ========================================================= */
+let map = null, markerLayer = null, spotMarker = null, radiusCircle = null, markers = {}, pendingPlace = null;
+
+function genPlaces(w, sIdx) {
+  const s = w.scenes[sIdx];
+  const r = rng(hashStr(w.id + '#' + sIdx));
+  const [a0, a1] = s.land || [0, 360];
+  const out = [];
+  CAT_KEYS.forEach(cat => {
+    const c = CATS[cat];
+    const names = shuffle(c.names, r).slice(0, c.n);
+    const pics = shuffle(c.imgs, r);
+    names.forEach((nm, i) => {
+      const d = 0.12 + Math.pow(r(), 1.5) * ((s.maxKm || 2.32) - 0.12);  // 가까운 곳이 더 많도록
+      const ang = (a0 + r() * (a1 - a0)) * Math.PI / 180;     // 방위각
+      const lat = s.lat + (d * Math.cos(ang)) / 111;
+      const lng = s.lng + (d * Math.sin(ang)) / (111 * Math.cos(s.lat * Math.PI / 180));
+      const tags = shuffle(c.tags, r).slice(0, 2);
+      out.push({
+        id: `${w.id}-${sIdx}-${cat}-${i}`, cat,
+        name: nm.replace('{r}', s.region),
+        img: pics[i % pics.length],
+        lat, lng,
+        dist: distKm(s.lat, s.lng, lat, lng),
+        rating: (3.8 + r() * 1.15).toFixed(1),
+        reviews: Math.floor(30 + r() * r() * 4800),
+        desc: c.descs[Math.floor(r() * c.descs.length)],
+        tags,
+        open: cat === 'stay' ? '체크인 15:00' : cat === 'attraction' ? (r() > .5 ? '상시 개방' : '09:00 - 18:00') : ['10:00 - 21:00', '11:00 - 20:30', '08:00 - 22:00', '11:30 - 15:00'][Math.floor(r() * 4)],
+        price: cat === 'food' ? ['1만원대', '2만원대', '3만원대'][Math.floor(r() * 3)] : cat === 'cafe' ? '6천원대' : cat === 'stay' ? ['8만원~', '12만원~', '18만원~'][Math.floor(r() * 3)] : (r() > .5 ? '무료' : '입장료 3,000원')
+      });
+    });
+  });
+  return out;
+}
+
+function ensureMap() {
+  if (map || !window.L) return;
+  map = L.map('map', { zoomControl: false, attributionControl: true });
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+  // 어두운 지도(Esri Dark Gray, API 키 불필요). 타일 오류가 계속되면 OpenStreetMap으로 자동 전환
+  const esri = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_';
+  const base = L.tileLayer(esri + 'Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 16, attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors' }).addTo(map);
+  const labels = L.tileLayer(esri + 'Reference/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 16 }).addTo(map);
+  let errors = 0;
+  base.on('tileerror', () => {
+    if (++errors !== 6) return;
+    map.removeLayer(base); map.removeLayer(labels);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+  });
+  markerLayer = L.layerGroup().addTo(map);
+  map.on('popupclose', () => { setSelected(null, false); });
+}
+
+function showMap(id, idx) {
+  const w = findWork(id);
+  idx = parseInt(idx, 10) || 0;
+  if (!w || !w.scenes[idx]) { go('#/'); return; }
+  const sceneChanged = state.work !== w || state.sceneIdx !== idx || !$('#mapview').classList.contains('show');
+  state.work = w; state.sceneIdx = idx;
+  closeModal();
+  $('#mapview').classList.add('show');
+  document.body.classList.add('no-scroll');
+  if (!sceneChanged) return;
+
+  state.places = genPlaces(w, idx);
+  state.filter = 'all'; state.selected = null;
+  const s = w.scenes[idx];
+
+  $('#mvCrumb').innerHTML = `${esc(w.title)} › <b>${esc(s.title)}</b>`;
+  $('#sceneInfo').innerHTML = `
+    <div class="scene-card">
+      <div class="scene-img" style="${photo([s.still, s.img], 800, 450, w.colors, false)}"></div>
+      <div class="scene-txt">
+        <div class="work">${esc(w.title)} · ${esc(s.ep)}</div>
+        <h2>${esc(s.title)}</h2>
+        <p>${esc(s.desc)}</p>
+      </div>
+    </div>
+    <div class="spot-box" id="spotBox">
+      <div class="pin">🎬</div>
+      <div><b>${esc(s.place)}</b><small>${esc(s.addr)} · 촬영지</small></div>
+    </div>
+    ${w.scenes.length > 1 ? `
+    <div class="other-scenes">
+      <h5>이 작품의 다른 명장면</h5>
+      <div class="os-track">${w.scenes.map((o, i) => `
+        <div class="os-item ${i === idx ? 'on' : ''}" data-os="${i}">
+          <div style="${photo([o.still, o.img], 240, 135, w.colors, false)}"></div>
+          <span>${esc(o.title)}</span>
+        </div>`).join('')}</div>
+    </div>` : ''}`;
+  $('#sideScroll').scrollTop = 0;
+
+  // 지도
+  if (!window.L) { $('#mapFallback').classList.add('show'); }
+  ensureMap();
+  if (map) {
+    if (spotMarker) spotMarker.remove();
+    if (radiusCircle) radiusCircle.remove();
+    spotMarker = L.marker([s.lat, s.lng], {
+      icon: L.divIcon({ className: '', html: '<div class="mk-spot">🎬</div>', iconSize: [46, 46], iconAnchor: [23, 23], popupAnchor: [0, -24] }),
+      zIndexOffset: 1000
+    }).addTo(map).bindPopup(spotPopup(w, s, idx));
+    radiusCircle = L.circle([s.lat, s.lng], { radius: 1000, color: '#e50914', weight: 1, opacity: .6, fillColor: '#e50914', fillOpacity: .05, dashArray: '4 6', interactive: false }).addTo(map);
+    map.setView([s.lat, s.lng], 14);
+  }
+
+  renderChips(); renderLegend();
+  renderPlaces(true);
+  // 지도 컨테이너가 방금 보이게 됐으므로 크기 재계산
+  setTimeout(() => {
+    if (!map) return;
+    map.invalidateSize();
+    fitAll();
+    if (pendingPlace) { const p = state.places.find(x => x.id === pendingPlace); pendingPlace = null; if (p) selectPlace(p.id, true); }
+  }, 60);
+}
+
+function spotPopup(w, s, idx) {
+  return `<div class="pop-img" style="${photo([s.still, s.img], 480, 220, w.colors, false)}"></div>
+    <div class="pop-body">
+      <div class="p-cat" style="color:var(--red)">🎬 촬영지 · ${esc(w.title)}</div>
+      <h4>${esc(s.place)}</h4>
+      <div class="p-meta">${esc(s.addr)}</div>
+      <div class="pop-btns">
+        <button class="b1" onclick="fakeRoute('${esc(s.place)}')">길찾기</button>
+        <button class="b2" onclick="toast('📸 인증샷 공유 기능은 정식 버전에서 제공돼요')">인증샷</button>
+      </div>
+    </div>`;
+}
+
+function placePopup(p) {
+  const c = CATS[p.cat];
+  return `<div class="pop-img" style="${placeImg(p, 480, 220)}">${placeEmo(p)}</div>
+    <div class="pop-body">
+      <div class="p-cat" style="color:${c.hex}">${c.icon} ${c.label}</div>
+      <h4>${esc(p.name)}</h4>
+      <div class="p-meta"><span class="star">★ ${p.rating}</span><span>리뷰 ${p.reviews.toLocaleString()}</span><span>촬영지에서 ${fmtDist(p.dist)}</span></div>
+      <div class="p-meta" style="margin-top:-4px"><span>🕒 ${p.open}</span><span>${p.price}</span></div>
+      <div class="pop-btns">
+        <button class="b1" onclick="fakeRoute('${esc(p.name)}')">길찾기</button>
+        <button class="b2" onclick="toggleLike('${p.id}')">${state.likedPlaces.has(p.id) ? '♥ 찜 해제' : '♡ 찜하기'}</button>
+      </div>
+    </div>`;
+}
+
+function fakeRoute(name) { toast(`🧭 '${name}' 길찾기 – 프로토타입에서는 경로 안내가 연동되지 않아요`); }
+
+function renderChips() {
+  const counts = { all: state.places.length };
+  CAT_KEYS.forEach(k => counts[k] = state.places.filter(p => p.cat === k).length);
+  $('#chips').innerHTML =
+    `<button class="chip ${state.filter === 'all' ? 'on' : ''}" data-chip="all">전체 <span class="cnt">${counts.all}</span></button>` +
+    CAT_KEYS.map(k => `<button class="chip ${state.filter === k ? 'on' : ''}" data-chip="${k}">${CATS[k].icon} ${CATS[k].label} <span class="cnt">${counts[k]}</span></button>`).join('');
+}
+
+function renderLegend() {
+  $('#legend').innerHTML = `<div><i style="background:var(--red)"></i>촬영지</div>` +
+    CAT_KEYS.map(k => `<div><i style="background:${CATS[k].hex}"></i>${CATS[k].label}</div>`).join('');
+}
+
+function visiblePlaces() {
+  let list = state.places.filter(p => (state.filter === 'all' || p.cat === state.filter) && p.dist <= state.radius);
+  const by = { dist: (a, b) => a.dist - b.dist, rating: (a, b) => b.rating - a.rating || a.dist - b.dist, review: (a, b) => b.reviews - a.reviews };
+  return list.sort(by[state.sort]);
+}
+
+function renderPlaces(skipFit) {
+  const list = visiblePlaces();
+  $('#resultCount').textContent = `${list.length}곳`;
+  $('#placeList').innerHTML = list.length ? list.map(p => {
+    const c = CATS[p.cat], liked = state.likedPlaces.has(p.id);
+    return `
+      <li class="place ${state.selected === p.id ? 'on' : ''}" data-place="${p.id}">
+        <div class="p-img" style="${placeImg(p, 200, 200)}">${placeEmo(p)}</div>
+        <div class="p-body">
+          <div class="p-cat" style="color:${c.hex}">${c.icon} ${c.label}</div>
+          <div class="p-name">${esc(p.name)}</div>
+          <div class="p-meta"><span class="star">★ ${p.rating}</span><span>리뷰 ${p.reviews.toLocaleString()}</span><span>${fmtDist(p.dist)} · 도보 ${walkMin(p.dist)}분</span></div>
+          <div class="p-desc">${esc(p.desc)}</div>
+          <div class="p-tags">${p.tags.map(t => `<span>#${esc(t)}</span>`).join('')}</div>
+        </div>
+        <button class="heart ${liked ? 'on' : ''}" data-heart="${p.id}" aria-label="찜하기">${ICON.heart}</button>
+      </li>`;
+  }).join('') : `<li class="no-place">조건에 맞는 장소가 없어요.<br>반경을 넓히거나 다른 카테고리를 선택해 보세요.</li>`;
+
+  if (!map) return;
+  markerLayer.clearLayers(); markers = {};
+  list.forEach(p => {
+    const c = CATS[p.cat];
+    const m = L.marker([p.lat, p.lng], {
+      icon: L.divIcon({ className: '', html: `<div class="mk" style="background:${c.hex}"><span>${c.icon}</span></div>`, iconSize: [30, 30], iconAnchor: [15, 30], popupAnchor: [0, -30] })
+    }).bindPopup(() => placePopup(p), { autoPanPadding: [40, 40] });
+    m.on('click', () => setSelected(p.id, true));
+    m.addTo(markerLayer);
+    markers[p.id] = m;
+  });
+  // 반경 원 표시
+  if (radiusCircle) {
+    if (state.radius < 999) { radiusCircle.setRadius(state.radius * 1000); radiusCircle.setStyle({ opacity: .6, fillOpacity: .05 }); }
+    else { radiusCircle.setRadius(1000); radiusCircle.setStyle({ opacity: .35, fillOpacity: .03 }); }
+  }
+  if (!skipFit) fitAll();
+}
+
+function fitAll() {
+  if (!map) return;
+  const s = state.work.scenes[state.sceneIdx];
+  const pts = [[s.lat, s.lng], ...visiblePlaces().map(p => [p.lat, p.lng])];
+  if (pts.length === 1) map.setView(pts[0], 15);
+  else map.fitBounds(L.latLngBounds(pts), { padding: [50, 50], maxZoom: 16 });
+}
+
+function setSelected(id, scrollList) {
+  state.selected = id;
+  document.querySelectorAll('.place').forEach(el => el.classList.toggle('on', el.dataset.place === id));
+  document.querySelectorAll('.mk.big').forEach(el => el.classList.remove('big'));
+  if (id && markers[id]) markers[id].getElement()?.querySelector('.mk')?.classList.add('big');
+  if (id && scrollList) {
+    const el = document.querySelector(`.place[data-place="${id}"]`);
+    if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+}
+
+function selectPlace(id, scrollList) {
+  const p = state.places.find(x => x.id === id);
+  if (!p) return;
+  // 현재 필터에서 안 보이면 전체로 전환
+  if (!visiblePlaces().some(x => x.id === id)) {
+    state.filter = 'all'; state.radius = 999; $('#radiusSel').value = '999';
+    renderChips(); renderPlaces(true);
+  }
+  if (map && markers[id]) {
+    map.flyTo([p.lat, p.lng], Math.max(map.getZoom(), 16), { duration: .6 });
+    setTimeout(() => { markers[id].openPopup(); setSelected(id, scrollList); }, 650);
+  } else setSelected(id, scrollList);
+}
+
+function toggleLike(id) {
+  const p = state.places.find(x => x.id === id);
+  if (!p) return;
+  if (state.likedPlaces.has(id)) { state.likedPlaces.delete(id); toast(`'${p.name}' 찜 해제`); }
+  else { state.likedPlaces.set(id, { place: p, workId: state.work.id, sceneIdx: state.sceneIdx }); toast(`♥ '${p.name}'을(를) 찜했어요 (상단 '내가 찜한 장소'에서 확인)`); }
+  const btn = document.querySelector(`[data-heart="${id}"]`);
+  if (btn) btn.classList.toggle('on', state.likedPlaces.has(id));
+  if (markers[id] && markers[id].isPopupOpen()) markers[id].setPopupContent(placePopup(p));
+}
+
+function hideMap() {
+  $('#mapview').classList.remove('show');
+  if (map) map.closePopup();
+}
+
+/* =========================================================
+   6. 라우터 (#/ , #/work/:id , #/scene/:id/:idx)
+      → 브라우저 뒤로가기도 자연스럽게 동작
+   ========================================================= */
+function route() {
+  const [page, id, idx] = location.hash.replace(/^#\/?/, '').split('/');
+  if (page === 'scene') { showMap(id, idx); return; }
+  hideMap();
+  if (page === 'work') openModal(id);
+  else { closeModal(); state.work = null; }
+  // 찜한 장소 화면이라면 갱신
+  const activeNav = document.querySelector('.nav a.active')?.dataset.filter;
+  if (activeNav === 'liked') renderRows('liked');
+}
+
+/* =========================================================
+   7. 이벤트 바인딩
+   ========================================================= */
+function init() {
+  renderHero();
+  renderRows();
+
+  $('#rows').addEventListener('click', onHomeClick);
+  $('#searchResult').addEventListener('click', onHomeClick);
+  document.addEventListener('scroll', e => { if (e.target.classList?.contains('track')) updateArrows(); }, true);
+  window.addEventListener('resize', updateArrows);
+  window.addEventListener('scroll', () => $('#header').classList.toggle('solid', window.scrollY > 40));
+
+  // 내비게이션 필터
+  $('#nav').addEventListener('click', e => {
+    const a = e.target.closest('a'); if (!a) return;
+    document.querySelectorAll('.nav a').forEach(x => x.classList.toggle('active', x === a));
+    $('#searchInput').value = ''; renderSearch('');
+    renderRows(a.dataset.filter);
+    const target = $('#rows').getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top: a.dataset.filter === 'all' ? 0 : target, behavior: 'smooth' });
+  });
+
+  // 검색
+  const sb = $('#searchBox'), si = $('#searchInput');
+  $('#searchBtn').addEventListener('mousedown', e => e.preventDefault());
+  $('#searchBtn').addEventListener('click', () => {
+    sb.classList.toggle('open');
+    if (sb.classList.contains('open')) si.focus(); else { si.value = ''; renderSearch(''); }
+  });
+  si.addEventListener('input', () => renderSearch(si.value));
+  si.addEventListener('blur', () => { if (!si.value) sb.classList.remove('open'); });
+
+  // 모달
+  $('#modalBg').addEventListener('click', e => {
+    if (e.target.id === 'modalBg' || e.target.closest('[data-close]')) { go('#/'); return; }
+    const st = e.target.closest('[data-scene]');
+    if (st && state.work) go(`#/scene/${state.work.id}/${st.dataset.scene}`);
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if ($('#mapview').classList.contains('show')) { if (map && map._popup && map.hasLayer(map._popup)) map.closePopup(); else $('#mvBack').click(); }
+    else if ($('#modalBg').classList.contains('show')) go('#/');
+  });
+
+  // 지도 화면
+  $('#mvBack').addEventListener('click', () => go(`#/work/${state.work.id}`));
+  $('#chips').addEventListener('click', e => {
+    const c = e.target.closest('[data-chip]'); if (!c) return;
+    state.filter = c.dataset.chip; state.selected = null;
+    if (map) map.closePopup();
+    renderChips(); renderPlaces();
+  });
+  $('#radiusSel').addEventListener('change', e => { state.radius = parseFloat(e.target.value); if (map) map.closePopup(); renderPlaces(); });
+  $('#sortSel').addEventListener('change', e => { state.sort = e.target.value; renderPlaces(true); });
+  $('#placeList').addEventListener('click', e => {
+    const h = e.target.closest('[data-heart]');
+    if (h) { e.stopPropagation(); toggleLike(h.dataset.heart); return; }
+    const li = e.target.closest('[data-place]');
+    if (li) selectPlace(li.dataset.place, false);
+  });
+  $('#sceneInfo').addEventListener('click', e => {
+    if (e.target.closest('#spotBox')) {
+      const s = state.work.scenes[state.sceneIdx];
+      if (map) { map.flyTo([s.lat, s.lng], 16, { duration: .6 }); setTimeout(() => spotMarker.openPopup(), 650); }
+      return;
+    }
+    const os = e.target.closest('[data-os]');
+    if (os) go(`#/scene/${state.work.id}/${os.dataset.os}`);
+  });
+  $('#recenterBtn').addEventListener('click', () => $('#spotBox').click());
+  $('#fitBtn').addEventListener('click', () => { if (map) map.closePopup(); fitAll(); });
+
+  window.addEventListener('hashchange', route);
+  route();
+}
+init();
+</script>
+</body>
+</html>
