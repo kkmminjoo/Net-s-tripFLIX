@@ -104,7 +104,6 @@
   .btn-white:hover { background: rgba(255,255,255,.75); }
   .btn-gray { background: rgba(109,109,110,.7); color: #fff; }
   .btn-gray:hover { background: rgba(109,109,110,.45); }
-  .match { color: var(--green); font-weight: 700; }
   .age { border: 1px solid rgba(255,255,255,.5); padding: 0 6px; font-size: 13px; line-height: 20px; }
   .hd { border: 1px solid rgba(255,255,255,.5); border-radius: 3px; padding: 0 5px; font-size: 11px; line-height: 16px; }
 
@@ -796,7 +795,7 @@ function renderHero() {
       <div class="hero-tag"><b>N</b> 촬영지 시리즈</div>
       <h1 class="hero-title">${esc(w.title)}</h1>
       <div class="hero-meta">
-        <span class="match">${w.match}% 일치</span><span>${w.year}</span>
+        <span>${w.year}</span>
         <span class="age">${w.age}+</span><span>${esc(w.ep)}</span><span class="hd">HD</span>
         <span>· 촬영지 ${w.scenes.length}곳</span>
       </div>
@@ -823,7 +822,7 @@ function cardHTML(w, opt = {}) {
         <button class="circle" data-act="like" title="좋아요">${ICON.like}</button>
         <button class="circle more" data-act="more" title="상세 정보">${ICON.down}</button>
       </div>
-      <div class="ci-meta"><span class="match">${w.match}% 일치</span><span class="age">${w.age}+</span><span>${w.type}</span><span class="hd">HD</span></div>
+      <div class="ci-meta"><span class="age">${w.age}+</span><span>${w.type}</span><span class="hd">HD</span></div>
       <div class="ci-genre">${w.genre.map(esc).join('<i>•</i>')}<i>•</i>촬영지 ${w.scenes.length}곳</div>
     </div>
   </div>`;
@@ -972,7 +971,7 @@ function renderModal(w) {
     <div class="modal-body">
       <div class="modal-info">
         <div>
-          <div class="meta"><span class="match">${w.match}% 일치</span><span>${w.year}</span><span class="age">${w.age}+</span><span>${esc(w.ep)}</span><span class="hd">HD</span></div>
+          <div class="meta"><span>${w.year}</span><span class="age">${w.age}+</span><span>${esc(w.ep)}</span><span class="hd">HD</span></div>
           <p>${esc(w.desc)}</p>
         </div>
         <div class="modal-side">
