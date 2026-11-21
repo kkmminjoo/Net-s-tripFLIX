@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NET's tripFLIX</title>
+<!-- 휴대폰 홈 화면에 추가하면 앱처럼 전체 화면으로 열리도록 하는 설정 -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#141414">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="tripFLIX">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -450,6 +459,22 @@
   .nodata { min-height: 100vh; display: grid; place-content: center; text-align: center; gap: 12px; padding: 16px; color: var(--text-2); line-height: 1.7; }
   .nodata .logo { justify-content: center; cursor: default; margin-bottom: 10px; }
   .nodata code { background: var(--bg-3); color: #fff; padding: 2px 8px; border-radius: 4px; }
+
+  /* ---------- 터치 화면(휴대폰·태블릿): 가로 줄을 손가락으로 넘길 수 있게 ---------- */
+  @media (hover: none), (pointer: coarse) {
+    .track {
+      pointer-events: auto;                 /* iPhone Safari는 none이면 가로 스크롤이 안 됨 */
+      padding-bottom: 12px; margin-bottom: 0; /* 카드 확대(hover)가 없으니 아래 여백 불필요 */
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x pan-y;
+      scroll-snap-type: x proximity;
+    }
+    .track > * { scroll-snap-align: start; }
+    .card:hover, .top-card:hover { transform: none; }
+    .card-info { display: none; }
+    .arrow { display: none; }
+    .rows { margin-top: -30px; }
+  }
 
   /* ---------- Responsive ---------- */
   @media (max-width: 900px) {
