@@ -1,0 +1,121 @@
+주변 장소 사진 출처 (식당·숙소·카페·관광지)
+업체가 직접 등록한 사진(네이버·카카오 업체 사진, 공식 홈페이지, 예약 사이트), 한국관광공사·지자체 자료, 위키미디어 공용(자유 라이선스)을 우선했고,
+없을 때만 해당 장소 리뷰 블로그의 외관 사진을 썼습니다. 저작권은 각 업체·촬영자에게 있으며 교육용 비상업 목적으로만 사용합니다.
+
+place_id	이름	출처 종류	출처 페이지
+woo-1-2	전주콩나물국밥유명한집	네이버·카카오 업체 사진	https://m.place.naver.com/place/1553928206/home
+woo-2-7	빌리쉬펜션	네이버·카카오 업체 사진	https://m.place.naver.com/place/21697677/home
+chacha-2-3	신선도횟집	네이버·카카오 업체 사진	https://m.place.naver.com/place/13172844/home
+chacha-3-3	월포자연산회집	네이버·카카오 업체 사진	https://m.place.naver.com/place/13035261/home
+blues-2-3	독천식당	네이버·카카오 업체 사진	https://m.place.naver.com/place/1300792522/home
+samdal-1-4	어우름 고기국수 성산일출봉본점	네이버·카카오 업체 사진	https://m.place.naver.com/place/2069340269/home
+samdal-2-6	펜션도구리3083	네이버·카카오 업체 사진	https://m.place.naver.com/place/1197435251/home
+sunjae-2-3	원조숯불닭불고기	네이버·카카오 업체 사진	https://m.place.naver.com/place/11711535/home
+sunjae-3-4	원조전라도전주횟집	blog	https://blog.naver.com/eunhea7126/222671480119
+tangerine-3-3	방모루	네이버·카카오 업체 사진	https://m.place.naver.com/place/13444873/home
+twenty-1-4	삼백집 전주 본점	네이버·카카오 업체 사진	https://m.place.naver.com/place/11658492/home
+decision-2-7	섬뜰아래 펜션캠핑장	네이버·카카오 업체 사진	https://m.place.naver.com/place/37130253/home
+ifwe-1-2	우리식당	네이버·카카오 업체 사진	https://m.place.naver.com/place/12053896/home
+ifwe-3-4	바다횟집	네이버·카카오 업체 사진	https://m.place.naver.com/place/17681794/home
+woo-1-3	촌집추어탕	blog	https://blog.naver.com/peskiss/224280680260
+chacha-1-1	시장식육식당	blog	https://blog.naver.com/summer_and_us/224475688701
+chacha-2-4	빌라드웨이브	지자체/관광공사	https://www.ktriptips.com/kor/food/2839377
+chacha-3-6	더원리조트	booking site	https://au.trip.com/hotels/pohang-hotel-detail-102606723/pohang-theone-resort-pension
+blues-2-4	영란횟집	지자체/관광공사	https://www.ktriptips.com/kor/food/2742073
+samdal-1-7	봄그리고가을리조트	네이버·카카오 업체 사진	https://place.map.kakao.com/996889508
+sunjae-1-3	가보정 1관	official site	https://kabojung.co.kr/
+sunjae-2-4	회영루	지자체/관광공사	https://www.ktriptips.com/kor/food/2901467
+sunjae-3-7	삽교호비치파크여관	네이버·카카오 업체 사진	https://place.map.kakao.com/1466426299
+tangerine-2-3	우진해장국	지자체/관광공사	https://english.visitkorea.or.kr/svc/whereToGo/locIntrdn/rgnContentsView.do?vcontsId=52937
+tangerine-3-4	김녕오라이	네이버·카카오 업체 사진	https://place.map.kakao.com/764321118
+twenty-1-7	엔브릿지호텔	official site	https://www.nbridge.kr/
+hope-1-2	진미식육식당	blog	https://blog.naver.com/jitaizzang/224430195821
+ifwe-1-3	달반늘숯불장어구이	지자체/관광공사	https://www.ktriptips.com/kor/food/2782789
+ifwe-3-7	어은돌오토캠핑장	official site	http://www.eoeundol.net/
+woo-2-3	국사봉 식당	네이버·카카오 업체 사진	https://place.map.kakao.com/1822229795
+chacha-1-2	비학산 생칼국수	네이버·카카오 업체 사진	https://m.place.naver.com/restaurant/1387732718/photo
+chacha-2-7	36.오도펜션	booking site	https://mom-mom.net/travel/properties/68beff657de4aea8fd32bca7
+blues-1-3	가파도해물짜장짬뽕	네이버·카카오 업체 사진	https://m.place.naver.com/restaurant/34061934/photo
+blues-2-7	신안비치호텔 3성인증	네이버·카카오 업체 사진	https://place.map.kakao.com/7971416
+samdal-2-2	신도어촌계식당	blog	https://blog.naver.com/thf98454/224400795506
+sunjae-1-4	길림성	네이버·카카오 업체 사진	https://m.place.naver.com/restaurant/32308222/photo
+sunjae-2-7	더잭슨나인스호텔	official site	http://jacksonhotel.co.kr/img_about/1468
+tangerine-2-4	고집돌우럭 제주공항점	네이버·카카오 업체 사진	https://place.map.kakao.com/232056222
+tangerine-3-7	빨간풍차펜션	네이버·카카오 업체 사진	https://place.map.kakao.com/26931748
+twenty-2-3	조점례남문피순대	네이버·카카오 업체 사진	https://place.map.kakao.com/10186580
+decision-2-3	무의도데침쌈밥	네이버·카카오 업체 사진	https://place.map.kakao.com/21317768
+hope-1-3	중국관	blog	https://blog.naver.com/oninin/224373024332
+ifwe-1-6	남해 명품 게스트하우스	네이버·카카오 업체 사진	https://place.map.kakao.com/1261132239
+tangerine-2-7	호텔 휘슬락 제주	booking site (여기어때)	https://www.yeogi.com/domestic-accommodations/13033
+chacha-1-5	포항약속 호텔	booking site (여기어때)	https://www.yeogi.com/domestic-accommodations/65559
+sunjae-1-7	호텔 도노	booking site (여기어때)	https://www.yeogi.com/domestic-accommodations/46885
+blues-1-4	가파도용궁정식	네이버·카카오 업체 사진 (카카오맵 장소 대표사진 POI)	https://place.map.kakao.com/20392557
+twenty-1-3	온담 전주본점(Ondam Korean BBQ)	네이버·카카오 업체 사진 (카카오맵 장소 대표사진 POI)	https://place.map.kakao.com/265761785
+samdal-1-3	전망좋은횟집&흑돼지 성산본점	네이버·카카오 업체 사진 (카카오 내가게 MYSTORE 업주 등록)	https://place.map.kakao.com/1538639318
+hope-1-4	함박골큰기와집	official site	http://hambakgol.net
+woo-2-4	실미도횟집	blog	http://blog.naver.com/incheon1224/224348586500
+chacha-3-2	월포백번횟집	blog	http://blog.naver.com/seo__u__/224346701005
+samdal-2-3	연희원	blog	http://blog.naver.com/ruyoo/224316566103
+decision-1-2	호수식당	blog	http://blog.naver.com/crazyracer/224246183633
+decision-2-4	황금손해물칼국수 무의점	blog	http://blog.naver.com/priscila0118/224464062771
+ifwe-3-3	인생버거	official SNS (업체 공식 네이버 블로그)	https://blog.naver.com/burgercat/222079542605
+twenty-1-1	전주 한옥마을	wikimedia_commons / CC BY 4.0, 저작자 Jjw (Wikimedia Commons)	https://commons.wikimedia.org/wiki/File:20240727_Jeonju_Hanok_Village_001.jpg
+chacha-3-5	카페 나트랑	네이버·카카오 업체 사진	https://place.map.kakao.com/1858837193
+samdal-2-5	핀스	네이버·카카오 업체 사진	https://place.map.kakao.com/1548286947
+decision-1-4	미술관카페	네이버·카카오 업체 사진	https://place.map.kakao.com/1981932221
+woo-2-5	카페뮈	네이버·카카오 업체 사진	https://m.place.naver.com/restaurant/1034676733/home
+tangerine-2-6	ABC 에이팩토리베이커리카페	네이버·카카오 업체 사진	https://m.place.naver.com/restaurant/1032006162/home
+sunjae-2-1	소양강스카이워크	지자체/관광공사	https://www.ktriptips.com/kor/tourspot/2396037
+sunjae-3-2	삽교호 관광지	지자체/관광공사	https://www.ktriptips.com/kor/tourspot/126847
+blues-2-1	노적봉예술공원	지자체/관광공사	https://www.ktriptips.com/kor/tourspot/127330
+chacha-2-2	갯마을 차차차 순임호	news	https://www.kbmaeil.com/911811
+woo-1-1	대산미술관	지자체/관광공사	https://www.ktriptips.com/kor/culture/130626
+ifwe-1-1	창선교	지자체/관광공사	https://www.ktriptips.com/kor/tourspot/249984
+ifwe-3-2	어은돌 등대	blog	https://blog.naver.com/760l6z/224394479536
+samdal-1-2	성산 유채꽃밭	news	https://www.twig24.com/news/2026/02/06/20260206800002
+chacha-2-5	어레인지먼트	네이버·카카오 업체 사진	https://m.place.naver.com/place/1265279462/home
+ifwe-3-5	커피인터뷰 파도리	네이버·카카오 업체 사진	https://m.place.naver.com/place/1197841705/home
+woo-2-6	오늘, 커피	네이버·카카오 업체 사진	https://m.place.naver.com/place/1518497844/home
+sunjae-3-5	카페 베리	네이버·카카오 업체 사진	https://m.place.naver.com/place/1600942545/home
+woo-1-4	카페모산	blog	https://blog.naver.com/hjkim356/223983666702
+blues-2-2	노을공원	KTO (ktriptips/visitkorea)	https://www.ktriptips.com/kor/tourspot/2784217
+sunjae-2-2	공지천 유원지	KTO (ktriptips/visitkorea)	https://www.ktriptips.com/kor/tourspot/2710586
+sunjae-1-1	수원화성	KTO (ktriptips/visitkorea)	https://www.ktriptips.com/eng/tourspot/264204
+twenty-1-2	전주 경기전	KTO (ktriptips/visitkorea)	https://www.ktriptips.com/eng/tourspot/264419
+decision-2-1	무의도 해상관광탐방로	지자체/관광공사 / 공공누리 제4유형(출처표시·비상업·변경금지), 크기만 줄임	https://www.incheon.go.kr/cn/CN010701/3021261
+blues-1-1	태봉왓	네이버·카카오 업체 사진	https://m.place.naver.com/place/1963093639/home
+tangerine-3-1	김녕 해변 등대	KTO (ktriptips/visitkorea)	https://www.ktriptips.com/kor/tourspot/129400
+sunjae-1-2	팔달문	wikimedia_commons	https://commons.wikimedia.org/wiki/File:Paldalmun_20240929_001.jpg
+tangerine-2-1	용두암	wikimedia_commons	https://commons.wikimedia.org/wiki/File:Yongduam_in_jeju.jpg
+tangerine-3-2	김녕해변 바닷길	visitkorea	https://www.ktriptips.com/kor/tourspot/129400
+chacha-2-6	카페 포토피아	visitkorea	https://www.ktriptips.com/kor/food/2842595
+sunjae-2-5	리버레인	visitkorea	https://www.ktriptips.com/kor/food/2914194
+ifwe-3-6	해피준카페	visitkorea	https://www.ktriptips.com/kor/food/2850961
+samdal-1-6	카페호랑호랑	visitkorea	https://www.ktriptips.com/kor/food/2847829
+decision-2-5	프라이라움	naver_place_business_photo	https://map.naver.com/p/entry/place/1435257311
+ifwe-1-5	카페 샘성	naver_place_business_photo	https://m.place.naver.com/restaurant/1143028380/home
+blues-2-5	대반동201	blog	https://m.blog.naver.com/artghost/224478477876
+sunjae-3-6	카페보니또 삽교천점	naver_place_business_photo	https://m.place.naver.com/restaurant/36605092/home
+chacha-1-3	솔카페	naver_place_business_photo	https://m.place.naver.com/restaurant/1435086279/home
+chacha-1-4	청춘카페	네이버·카카오 업체 사진	https://m.place.naver.com/restaurant/1128893700/home
+blues-1-5	가파리212	네이버·카카오 업체 사진	https://m.place.naver.com/restaurant/1251565619/home
+blues-2-6	SUKSAN(석산)	네이버·카카오 업체 사진	https://m.place.naver.com/restaurant/1416812341/home
+sunjae-1-5	카페디아즈 수원종합운동장점	네이버·카카오 업체 사진	https://m.place.naver.com/restaurant/2020865073/home
+sunjae-2-6	카페 레이크뷰	네이버·카카오 업체 사진	https://m.place.naver.com/restaurant/2015384495/home
+tangerine-3-5	쪼끌락	네이버·카카오 업체 사진	https://m.place.naver.com/restaurant/36399029/home
+twenty-1-6	카페 마시랑게	네이버·카카오 업체 사진	https://m.place.naver.com/restaurant/1123902077/home
+decision-2-6	하나개팜	blog	https://blog.naver.com/crazynael/223550838178
+woo-2-1	실미해수욕장	지자체/관광공사	https://www.ktriptips.com/kor/tourspot/129253
+chacha-3-1	이가리 닻 전망대	지자체/관광공사	https://www.ktriptips.com/kor/tourspot/2708154
+tangerine-2-2	용연구름다리	지자체/관광공사	https://www.ktriptips.com/kor/tourspot/2738692
+ifwe-2-1	남해 토피아랜드	지자체/관광공사	https://www.ktriptips.com/kor/tourspot/2742172
+samdal-2-1	노을해안길	지자체/관광공사	https://www.ktriptips.com/kor/tourspot/2778890
+samdal-1-1	광치기해변	KTO (ktriptips/visitkorea)	https://www.ktriptips.com/kor/tourspot/3485912
+decision-1-1	대진항	KTO (ktriptips/visitkorea)	https://www.ktriptips.com/kor/tourspot/2776834
+sunjae-3-1	삽교호 바다공원	KTO (ktriptips/visitkorea)	https://www.ktriptips.com/kor/tourspot/2736681
+hope-1-1	이진성지 (梨津城址)	government heritage portal (국가유산포털, photo credit 해남군)	https://www.heritage.go.kr/heri/cul/culSelectDetail.do?VdkVgwKey=23%2C01200000%2C36&pageNo=1_1_1_0
+ifwe-3-1	파도리 해식동굴	government media (정책브리핑 K-공감)	https://gonggam.korea.kr/newsContentView.es?mid=a12505000000&section_id=NCCD_PUBLISH&content=NC002&news_id=3a10cd45-6a47-4eeb-bad4-36305cbb63be&code_cd=0121000000
+woo-2-2	무의도	KTO (ktriptips/visitkorea)	https://www.ktriptips.com/kor/tourspot/126797
+chacha-2-1	Hometown Cha Cha Cha (Yoon Dental Clinic)	Wikimedia Commons / CC BY 3.0, 저작자 Travel & Pastime (Wikimedia Commons)	https://commons.wikimedia.org/wiki/File:Yoon_Chikwa.jpg
+samdal-2-4	미쁜제과	KTO (ktriptips/visitkorea)	https://www.ktriptips.com/kor/food/2831622
+tangerine-2-5	앙뚜아네트	local tourism (VISIT JEJU)	https://www.visitjeju.net/kr/detail/view?contentsid=CNTS_200000000008092
